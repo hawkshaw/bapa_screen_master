@@ -23,6 +23,12 @@ void Obj::setup(float positionX, float positionY, float velocityX, float velocit
     velocity = ofVec2f(velocityX, velocityY);
 }
 
+void Obj::setupLong(ofVec2f _position, ofVec2f _velocity, float _length){
+    position = _position;
+    velocity = _velocity;
+    length = _length;
+}
+
 void Obj::updatePos(){
     if (!bFixed) {
         position += velocity;
@@ -40,4 +46,15 @@ void Obj::draw(){
     ofCircle(position, radius);
     ofSetColor(0, 0, 255);
     ofCircle(position, radius*0.85);
+}
+
+void Obj::drawLong(){
+    ofSetColor(255);
+    ofCircle(position, radius);
+    ofRect(position.x, position.y-radius, length, radius*2);
+    ofCircle(position+ofVec2f(length, 0),radius);
+    ofSetColor(0, 255, 0);
+    ofCircle(position, radius*0.85);
+    ofRect(position.x, position.y-(radius*0.85), length, (radius*0.85)*2);
+    ofCircle(position+ofVec2f(length, 0),radius*0.85);
 }

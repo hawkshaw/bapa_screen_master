@@ -15,7 +15,7 @@ void ofApp::setup(){
     bMusicReset = false;
     
     gui.setup("panel");
-    gui.add(line1.set("longObjWidth",300,200,800));
+    gui.add(length_1.set("length",300,200,800));
     
     ofShowCursor();
     
@@ -40,8 +40,8 @@ void ofApp::update(){
             //cout << "bang fired" << endl;
         }
         else if(m.getAddress() == "/bang/long"){ //名前をチェック
-            longObj o;
-            o.setup(ofVec2f(ofGetWidth(),120), ofVec2f(-15,0), line1);
+            Obj o;
+            o.setupLong(ofVec2f(ofGetWidth(),120), ofVec2f(-15,0), length_1);
             longObjects.push_back(o);
         }
     }
@@ -56,7 +56,7 @@ void ofApp::update(){
     }
     
     for (int i = 0; i < longObjects.size(); i++){
-        if(longObjects[i].position.x < -(longObjects[i].radius+longObjects[i].width)){
+        if(longObjects[i].position.x < -(longObjects[i].radius+longObjects[i].length)){
             longObjects.erase(longObjects.begin()+i);
         }
         
@@ -92,7 +92,7 @@ void ofApp::draw(){
     
     //ofSetColor(0, 255, 0);
     for (int i = 0; i < longObjects.size(); i++) {
-        longObjects[i].draw();
+        longObjects[i].drawLong();
     }
     
     if(!bHideGui) gui.draw();
@@ -100,12 +100,13 @@ void ofApp::draw(){
     string info = "FPS: "+ofToString(ofGetFrameRate(), 3);
     info += "\nObjects num: "+ofToString(Objects.size());
     info += "\nlongObjects num: "+ofToString(longObjects.size());
+    info += "\npress z: long obj x: normal obj";
     info += "\npress p: play s: stop r: reset";
     if(bMusicPlay) info += "\nmusic: play";
     else if(bMusicStop) info += "\nmusic: stop";
     else if(bMusicReset) info += "\nmusic: reset";
     ofSetColor(255);
-    ofDrawBitmapString(info, 20, ofGetHeight()-100);
+    ofDrawBitmapString(info, 20, ofGetHeight()-150);
 
 }
 
@@ -114,8 +115,8 @@ void ofApp::keyPressed(int key){
     if(key == 'h') bHideImage = !bHideImage;
     if(key == ' ') bHideGui = !bHideGui;
     if(key == 'z'){
-        longObj o;
-        o.setup(ofVec2f(ofGetWidth(),120), ofVec2f(-15,0), line1);
+        Obj o;
+        o.setupLong(ofVec2f(ofGetWidth(),120), ofVec2f(-15,0), length_1);
         longObjects.push_back(o);
     }
     if(key == 'x'){

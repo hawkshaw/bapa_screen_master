@@ -14,15 +14,19 @@ class Obj {
 public:
     Obj();
     
-    void setup(ofVec2f position, ofVec2f velocity);
+    void setup(ofVec2f _position, ofVec2f _velocity);
     void setup(float positionX, float positionY, float velocityX, float velocityY);
+    
+    void setupLong(ofVec2f _position, ofVec2f _velocity, float _length);
     
     void updatePos();
     void update();
     void draw();
+    void drawLong();
     
     ofVec2f position;
     ofVec2f velocity;
     float radius;
     bool bFixed;
+    float length;
 };

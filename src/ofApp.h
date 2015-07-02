@@ -2,7 +2,6 @@
 
 #include "ofMain.h"
 #include "Obj.h"
-#include "longObj.h"
 #include "ofxGui.h"
 #include "ofxOsc.h"
 
@@ -29,11 +28,11 @@ class ofApp : public ofBaseApp{
     bool bHideImage;
     bool bHideGui;
     
-    ofParameter<int> line1;
+    ofParameter<int> length_1;
     ofxPanel gui;
     
     vector<Obj> Objects;
-    vector<longObj> longObjects;
+    vector<Obj> longObjects;
     
 
     ofxOscReceiver receiver;
