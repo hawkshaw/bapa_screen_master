@@ -15,7 +15,7 @@ void ofApp::setup(){
     bMusicReset = false;
     
     gui.setup("panel");
-    gui.add(length_1.set("length",300,200,800));
+    gui.add(length_1.set("length",400,200,800));
     
     ofShowCursor();
     
@@ -35,13 +35,13 @@ void ofApp::update(){
         
         if(m.getAddress() == "/bang"){ //名前をチェック
             Obj o;
-            o.setup(ofVec2f(ofGetWidth(),40), ofVec2f(-10,0));
+            o.setup(ofVec2f(ofGetWidth(),40), ofVec2f(-5.07,0));
             Objects.push_back(o);
             //cout << "bang fired" << endl;
         }
         else if(m.getAddress() == "/bang/long"){ //名前をチェック
             Obj o;
-            o.setupLong(ofVec2f(ofGetWidth(),120), ofVec2f(-15,0), length_1);
+            o.setupLong(ofVec2f(ofGetWidth(),120), ofVec2f(-5.07,0), length_1);
             longObjects.push_back(o);
         }
     }
@@ -61,6 +61,14 @@ void ofApp::update(){
         }
         
         longObjects[i].update();
+    }
+    
+    for (int i = 0; i < bigObjects.size(); i++){
+        if(bigObjects[i].position.x < -bigObjects[i].radius){
+            bigObjects.erase(bigObjects.begin()+i);
+        }
+        
+        bigObjects[i].update();
     }
     
 
@@ -94,14 +102,18 @@ void ofApp::draw(){
     for (int i = 0; i < longObjects.size(); i++) {
         longObjects[i].drawLong();
     }
-    
+
+    for (int i = 0; i < bigObjects.size(); i++) {
+        bigObjects[i].drawBig();
+    }
+
     if(!bHideGui) gui.draw();
     
     string info = "FPS: "+ofToString(ofGetFrameRate(), 3);
     info += "\nObjects num: "+ofToString(Objects.size());
     info += "\nlongObjects num: "+ofToString(longObjects.size());
-    info += "\npress z: long obj x: normal obj";
-    info += "\npress p: play s: stop r: reset";
+    info += "\npress z: normal x: long c: big";
+    info += "\npress p: music play s: stop r: reset";
     if(bMusicPlay) info += "\nmusic: play";
     else if(bMusicStop) info += "\nmusic: stop";
     else if(bMusicReset) info += "\nmusic: reset";
@@ -116,14 +128,20 @@ void ofApp::keyPressed(int key){
     if(key == ' ') bHideGui = !bHideGui;
     if(key == 'z'){
         Obj o;
-        o.setupLong(ofVec2f(ofGetWidth(),120), ofVec2f(-15,0), length_1);
-        longObjects.push_back(o);
+        o.setup(ofVec2f(ofGetWidth(),40), ofVec2f(-5.07,0));
+        Objects.push_back(o);
     }
     if(key == 'x'){
         Obj o;
-        o.setup(ofVec2f(ofGetWidth(),40), ofVec2f(-10,0));
-        Objects.push_back(o);
+        o.setupLong(ofVec2f(ofGetWidth(),120), ofVec2f(-5.07,0), length_1);
+        longObjects.push_back(o);
     }
+    if(key == 'c'){
+        Obj o;
+        o.setup(ofVec2f(ofGetWidth(),200), ofVec2f(-5.07,0));
+        bigObjects.push_back(o);
+    }
+
     if(key == 'p'){
         ofxOscMessage m;
         m.setAddress("/duration/play");

@@ -23,6 +23,7 @@ public:
     void update();
     void draw();
     void drawLong();
+    void drawBig();
     
     ofVec2f position;
     ofVec2f velocity;
