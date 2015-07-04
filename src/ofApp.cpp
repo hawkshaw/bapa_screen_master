@@ -44,6 +44,12 @@ void ofApp::update(){
             o.setupLong(ofVec2f(ofGetWidth(),120), ofVec2f(-5.07,0), length_1);
             longObjects.push_back(o);
         }
+        else if(m.getAddress() == "/mouse/position2"){ //名前をチェック
+            getMessage2(m);
+        }
+        else if(m.getAddress() == "/mouse/position22"){ //名前をチェック
+            getMessage22(m);
+        }
     }
 
     
@@ -71,7 +77,12 @@ void ofApp::update(){
         bigObjects[i].update();
     }
     
-
+    for (int i = 0; i < ObjHumans.size(); i++){
+        if(ObjHumans[i].count > 100){
+            ObjHumans.erase(ObjHumans.begin()+i);
+        }
+        ObjHumans[i].update();
+    }
 }
 
 //--------------------------------------------------------------
@@ -107,6 +118,12 @@ void ofApp::draw(){
         bigObjects[i].drawBig();
     }
 
+    //こっから動体描画
+    for (int i = 0; i < ObjHumans.size(); i++) {
+        ObjHumans[i].draw();
+    }
+    
+    
     if(!bHideGui) gui.draw();
     
     string info = "FPS: "+ofToString(ofGetFrameRate(), 3);
@@ -166,8 +183,6 @@ void ofApp::keyPressed(int key){
         bMusicStop = false;
         bMusicReset = true;
     }
-
-
 }
 
 //--------------------------------------------------------------
@@ -208,4 +223,35 @@ void ofApp::gotMessage(ofMessage msg){
 //--------------------------------------------------------------
 void ofApp::dragEvent(ofDragInfo dragInfo){ 
 
+}
+
+
+//--------------------------------------------------------------
+void ofApp::getMessage2(ofxOscMessage m){
+    int mousenum;
+    mousenum = m.getNumArgs();
+    for (int j=0 ; j < mousenum/4 ; j++){
+        //叩かれた座標
+        mouseX = m.getArgAsInt32(0+j*3);
+        mouseY = m.getArgAsInt32(1+j*3);
+        //物体検出id
+        int mouseID;
+        mouseID = m.getArgAsInt32(2+j*3);
+        //平均動きからのズレ
+        int mouseStd;
+        mouseStd = m.getArgAsInt32(j+mousenum/4*3);
+        ObjHuman o;
+        o.setup(mouseX,mouseY,mouseID,mouseStd);
+        ObjHumans.push_back(o);
+    }
+}
+
+//--------------------------------------------------------------
+void ofApp::getMessage22(ofxOscMessage m){
+    int msgnum;
+    msgnum = m.getNumArgs();
+    if(msgnum==2){
+        velx_ave = m.getArgAsInt32(0);
+        vely_ave = m.getArgAsInt32(1);
+    }
 }

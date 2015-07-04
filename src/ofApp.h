@@ -42,4 +42,10 @@ class ofApp : public ofBaseApp{
     bool bMusicStop;
     bool bMusicPlay;
     bool bMusicReset;
+    
+    vector<ObjHuman> ObjHumans;
+    
+    void getMessage2(ofxOscMessage m);
+    void getMessage22(ofxOscMessage m);
+    int velx_ave,vely_ave;
 };
