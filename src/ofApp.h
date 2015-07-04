@@ -2,13 +2,13 @@
 
 #include "ofMain.h"
 #include "Obj.h"
+#include "ObjHuman.h"
 #include "ofxGui.h"
 #include "ofxOsc.h"
 
 #define HOST "localhost"
 
 class ofApp : public ofBaseApp{
-
 	public:
 		void setup();
 		void update();
