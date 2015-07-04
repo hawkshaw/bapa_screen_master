@@ -46,6 +46,8 @@ void Obj::draw(){
     ofCircle(position, radius);
     ofSetColor(0, 0, 255);
     ofCircle(position, radius*0.85);
+    ofSetColor(255);
+    ofLine(position.x,position.y-radius, position.x,position.y+radius);
 }
 
 void Obj::drawLong(){
@@ -57,4 +59,11 @@ void Obj::drawLong(){
     ofCircle(position, radius*0.85);
     ofRect(position.x, position.y-(radius*0.85), length, (radius*0.85)*2);
     ofCircle(position+ofVec2f(length, 0),radius*0.85);
+}
+
+void Obj::drawBig(){
+    ofSetColor(255);
+    ofCircle(position, radius*1.5);
+    ofSetColor(255, 0, 0);
+    ofCircle(position, radius*1.5*0.85);
 }

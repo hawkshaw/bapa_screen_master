@@ -33,6 +33,7 @@ class ofApp : public ofBaseApp{
     
     vector<Obj> Objects;
     vector<Obj> longObjects;
+    vector<Obj> bigObjects;
     
 
     ofxOscReceiver receiver;
