@@ -46,15 +46,12 @@ class ofApp : public ofBaseApp{
     bool bMusicPlay;
     bool bMusicReset;
     
-<<<<<<< HEAD
     float startTime;
     
     float objVelocity;
-=======
     vector<ObjHuman> ObjHumans;
     
     void getMessage2(ofxOscMessage m);
     void getMessage22(ofxOscMessage m);
     int velx_ave,vely_ave;
->>>>>>> 2ef1f0bfc66f5d11d3b8a61fdc9178ae7a9025ed
 };

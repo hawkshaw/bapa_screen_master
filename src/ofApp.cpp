@@ -54,28 +54,17 @@ void ofApp::update(){
             o.setupLong(ofVec2f(ofGetWidth(),120), objVelocity, length_1);
             longObjects.push_back(o);
         }
-<<<<<<< HEAD
         else if(m.getAddress() == "/bang/big"){ //名前をチェック
             Obj o;
             o.setup(ofVec2f(ofGetWidth(),200), objVelocity);
             bigObjects.push_back(o);
         }
-<<<<<<< HEAD
-=======
->>>>>>> 2ef1f0bfc66f5d11d3b8a61fdc9178ae7a9025ed
         else if(m.getAddress() == "/mouse/position2"){ //名前をチェック
             getMessage2(m);
         }
         else if(m.getAddress() == "/mouse/position22"){ //名前をチェック
             getMessage22(m);
         }
-<<<<<<< HEAD
-=======
-    }
->>>>>>> 2ef1f0bfc66f5d11d3b8a61fdc9178ae7a9025ed
-
-=======
->>>>>>> parent of 9dba286... kaeta
     }
     
     for (int i = 0; i < Objects.size(); i++){
@@ -99,7 +88,6 @@ void ofApp::update(){
         }
         bigObjects[i].update();
     }
-<<<<<<< HEAD
     
     for (int i = 0; i < ObjHumans.size(); i++){
         if(ObjHumans[i].count > 100){
@@ -107,12 +95,6 @@ void ofApp::update(){
         }
         ObjHumans[i].update();
     }
-<<<<<<< HEAD
-=======
->>>>>>> parent of 9dba286... kaeta
-
-=======
->>>>>>> 2ef1f0bfc66f5d11d3b8a61fdc9178ae7a9025ed
 }
 
 //--------------------------------------------------------------
@@ -163,7 +145,6 @@ void ofApp::draw(){
         bigObjects[i].drawBig();
     }
 
-<<<<<<< HEAD
     if(bHideGui) gui.draw();
     
     ofSetColor(255);
@@ -175,7 +156,7 @@ void ofApp::draw(){
 //    
 //    ofSetColor(0, 0, 255);
 //    ofCircle(x,y,30);
-=======
+
     //こっから動体描画
     for (int i = 0; i < ObjHumans.size(); i++) {
         ObjHumans[i].draw();
@@ -183,7 +164,6 @@ void ofApp::draw(){
     
     
     if(!bHideGui) gui.draw();
->>>>>>> 2ef1f0bfc66f5d11d3b8a61fdc9178ae7a9025ed
     
     string info = "FPS: "+ofToString(ofGetFrameRate(), 3);
     //info += "\nObjects num: "+ofToString(Objects.size());
@@ -269,10 +249,6 @@ void ofApp::keyPressed(int key){
             }
         }
     }
-<<<<<<< HEAD
-
-=======
->>>>>>> 2ef1f0bfc66f5d11d3b8a61fdc9178ae7a9025ed
 }
 
 //--------------------------------------------------------------
@@ -326,12 +302,7 @@ void ofApp::gotMessage(ofMessage msg){
 void ofApp::dragEvent(ofDragInfo dragInfo){ 
 
 }
-<<<<<<< HEAD
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 2ef1f0bfc66f5d11d3b8a61fdc9178ae7a9025ed
 //--------------------------------------------------------------
 void ofApp::getMessage2(ofxOscMessage m){
     int mousenum;
@@ -361,5 +332,3 @@ void ofApp::getMessage22(ofxOscMessage m){
         vely_ave = m.getArgAsInt32(1);
     }
 }
-=======
->>>>>>> parent of 9dba286... kaeta
