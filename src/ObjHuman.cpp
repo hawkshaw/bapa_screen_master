@@ -32,6 +32,9 @@ void ObjHuman::draw(){
     }else{
         ofSetColor(255, 0, 0);
     }
+    if(humanStd){
+        ofSetColor(0, 0, 0);
+    }
     ofCircle(position, radius*0.85);
     string msg = ofToString(humanStd);
     ofSetColor(0, 255, 0);
