@@ -25,8 +25,11 @@ class ofApp : public ofBaseApp{
 		void gotMessage(ofMessage msg);
     
     ofImage img;
+    ofVideoGrabber grabber;
     bool bHideImage;
     bool bHideGui;
+    int judgeLine;
+    int score;
     
     ofParameter<int> length_1;
     ofxPanel gui;
@@ -42,4 +45,8 @@ class ofApp : public ofBaseApp{
     bool bMusicStop;
     bool bMusicPlay;
     bool bMusicReset;
+    
+    float startTime;
+    
+    float objVelocity;
 };
