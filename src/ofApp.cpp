@@ -54,17 +54,24 @@ void ofApp::update(){
             o.setupLong(ofVec2f(ofGetWidth(),120), objVelocity, length_1);
             longObjects.push_back(o);
         }
+<<<<<<< HEAD
         else if(m.getAddress() == "/bang/big"){ //名前をチェック
             Obj o;
             o.setup(ofVec2f(ofGetWidth(),200), objVelocity);
             bigObjects.push_back(o);
         }
+=======
+>>>>>>> 2ef1f0bfc66f5d11d3b8a61fdc9178ae7a9025ed
         else if(m.getAddress() == "/mouse/position2"){ //名前をチェック
             getMessage2(m);
         }
         else if(m.getAddress() == "/mouse/position22"){ //名前をチェック
             getMessage22(m);
         }
+<<<<<<< HEAD
+=======
+    }
+>>>>>>> 2ef1f0bfc66f5d11d3b8a61fdc9178ae7a9025ed
 
     }
     
@@ -96,7 +103,10 @@ void ofApp::update(){
         }
         ObjHumans[i].update();
     }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 2ef1f0bfc66f5d11d3b8a61fdc9178ae7a9025ed
 }
 
 //--------------------------------------------------------------
@@ -152,6 +162,7 @@ void ofApp::draw(){
         ObjHumans[i].draw();
     }
 
+<<<<<<< HEAD
     if(bHideGui) gui.draw();
     
     ofSetColor(255);
@@ -163,6 +174,15 @@ void ofApp::draw(){
 //    
 //    ofSetColor(0, 0, 255);
 //    ofCircle(x,y,30);
+=======
+    //こっから動体描画
+    for (int i = 0; i < ObjHumans.size(); i++) {
+        ObjHumans[i].draw();
+    }
+    
+    
+    if(!bHideGui) gui.draw();
+>>>>>>> 2ef1f0bfc66f5d11d3b8a61fdc9178ae7a9025ed
     
     string info = "FPS: "+ofToString(ofGetFrameRate(), 3);
     //info += "\nObjects num: "+ofToString(Objects.size());
@@ -248,7 +268,10 @@ void ofApp::keyPressed(int key){
             }
         }
     }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 2ef1f0bfc66f5d11d3b8a61fdc9178ae7a9025ed
 }
 
 //--------------------------------------------------------------
@@ -303,6 +326,10 @@ void ofApp::dragEvent(ofDragInfo dragInfo){
 
 }
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 2ef1f0bfc66f5d11d3b8a61fdc9178ae7a9025ed
 //--------------------------------------------------------------
 void ofApp::getMessage2(ofxOscMessage m){
     int mousenum;
