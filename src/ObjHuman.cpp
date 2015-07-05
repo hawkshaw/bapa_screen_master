@@ -32,7 +32,7 @@ void ObjHuman::draw(){
     }else{
         ofSetColor(255, 0, 0);
     }
-    if(humanStd){
+    if(humanStd < 0){
         ofSetColor(0, 0, 0);
     }
     ofCircle(position, radius*0.85);

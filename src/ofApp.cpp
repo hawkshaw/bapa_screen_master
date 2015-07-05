@@ -23,7 +23,7 @@ void ofApp::setup(){
     
     gui.setup("panel");
     gui.add(length_1.set("length",400,200,800));
-    gui.add(missThr.set("missThr", 4,1,30));//失敗と判定する閾値
+    gui.add(missThr.set("missThr", 30,1,200));//失敗と判定する閾値
     
     missThr.addListener(this, &ofApp::valChanged);
 
