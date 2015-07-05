@@ -9,13 +9,13 @@
 #pragma once
 #include "ofMain.h"
 
+
 class ObjHuman {
     
 public:
     ObjHuman();
     
-    void setup(float positionX, float positionY,int _id,int _mouseStd);
-    
+    void setup(float positionX, float positionY,int _id,int _mouseStd,int _objMissThr);
     void update();
     void draw();
     
@@ -25,4 +25,5 @@ public:
     int count;
     float radius;
     float length;
+    int objMissThr;
 };

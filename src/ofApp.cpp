@@ -23,7 +23,10 @@ void ofApp::setup(){
     
     gui.setup("panel");
     gui.add(length_1.set("length",400,200,800));
+    gui.add(missThr.set("missThr", 4,1,30));//失敗と判定する閾値
     
+    missThr.addListener(this, &ofApp::valChanged);
+
     startTime = ofGetElapsedTimeMillis();
     
     ofShowCursor();
@@ -32,6 +35,11 @@ void ofApp::setup(){
     sender.setup(HOST, 12346);
     
 }
+
+void ofApp::valChanged(int &val){
+}
+
+
 
 //--------------------------------------------------------------
 void ofApp::update(){
@@ -305,6 +313,7 @@ void ofApp::dragEvent(ofDragInfo dragInfo){
 
 //--------------------------------------------------------------
 void ofApp::getMessage2(ofxOscMessage m){
+    ObjHumans.clear();
     int mousenum;
     mousenum = m.getNumArgs();
     for (int j=0 ; j < mousenum/4 ; j++){
@@ -318,7 +327,7 @@ void ofApp::getMessage2(ofxOscMessage m){
         int mouseStd;
         mouseStd = m.getArgAsInt32(j+mousenum/4*3);
         ObjHuman o;
-        o.setup(mouseX,mouseY,mouseID,mouseStd);
+        o.setup(mouseX,mouseY,mouseID,mouseStd,missThr);
         ObjHumans.push_back(o);
     }
 }

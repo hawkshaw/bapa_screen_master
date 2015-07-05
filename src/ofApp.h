@@ -8,6 +8,7 @@
 
 #define HOST "localhost"
 
+
 class ofApp : public ofBaseApp{
 	public:
 		void setup();
@@ -32,8 +33,11 @@ class ofApp : public ofBaseApp{
     int score;
     
     ofParameter<int> length_1;
+    ofParameter<int> missThr;
     ofxPanel gui;
     
+    void valChanged(int &val);
+
     vector<Obj> Objects;
     vector<Obj> longObjects;
     vector<Obj> bigObjects;
@@ -41,6 +45,7 @@ class ofApp : public ofBaseApp{
 
     ofxOscReceiver receiver;
     ofxOscSender sender;
+
     
     bool bMusicStop;
     bool bMusicPlay;

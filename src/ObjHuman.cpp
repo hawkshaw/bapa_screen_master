@@ -13,10 +13,11 @@ ObjHuman::ObjHuman(){
     count = 0;
 }
 
-void ObjHuman::setup(float positionX, float positionY, int _id, int _mouseStd){
+void ObjHuman::setup(float positionX, float positionY, int _id, int _mouseStd,int _objMissThr){
     position = ofVec2f(positionX, positionY);
     humanid = _id;
     humanStd = _mouseStd;
+    objMissThr = _objMissThr;
 }
 
 void ObjHuman::update(){
@@ -26,6 +27,13 @@ void ObjHuman::update(){
 void ObjHuman::draw(){
     ofSetColor(255);
     ofCircle(position, radius);
-    ofSetColor(0, 0, 255);
+    if(humanStd <= objMissThr){
+        ofSetColor(0, 0, 255);
+    }else{
+        ofSetColor(255, 0, 0);
+    }
     ofCircle(position, radius*0.85);
+    string msg = ofToString(humanStd);
+    ofSetColor(0, 255, 0);
+    ofDrawBitmapString(msg, position.x,position.y);
 }
