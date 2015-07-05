@@ -5,7 +5,6 @@
 #include "ObjHuman.h"
 #include "ofxGui.h"
 #include "ofxOsc.h"
-#include "ObjHuman.h"
 
 #define HOST "localhost"
 
@@ -39,11 +38,6 @@ class ofApp : public ofBaseApp{
     vector<Obj> longObjects;
     vector<Obj> bigObjects;
     
-    vector<ObjHuman> ObjHumans;
-    
-    void getMessage2(ofxOscMessage m);
-    void getMessage22(ofxOscMessage m);
-    int velx_ave,vely_ave;
 
     ofxOscReceiver receiver;
     ofxOscSender sender;

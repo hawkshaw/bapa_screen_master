@@ -60,6 +60,7 @@ void ofApp::update(){
             o.setup(ofVec2f(ofGetWidth(),200), objVelocity);
             bigObjects.push_back(o);
         }
+<<<<<<< HEAD
 =======
 >>>>>>> 2ef1f0bfc66f5d11d3b8a61fdc9178ae7a9025ed
         else if(m.getAddress() == "/mouse/position2"){ //名前をチェック
@@ -73,6 +74,8 @@ void ofApp::update(){
     }
 >>>>>>> 2ef1f0bfc66f5d11d3b8a61fdc9178ae7a9025ed
 
+=======
+>>>>>>> parent of 9dba286... kaeta
     }
     
     for (int i = 0; i < Objects.size(); i++){
@@ -96,6 +99,7 @@ void ofApp::update(){
         }
         bigObjects[i].update();
     }
+<<<<<<< HEAD
     
     for (int i = 0; i < ObjHumans.size(); i++){
         if(ObjHumans[i].count > 100){
@@ -104,6 +108,8 @@ void ofApp::update(){
         ObjHumans[i].update();
     }
 <<<<<<< HEAD
+=======
+>>>>>>> parent of 9dba286... kaeta
 
 =======
 >>>>>>> 2ef1f0bfc66f5d11d3b8a61fdc9178ae7a9025ed
@@ -155,11 +161,6 @@ void ofApp::draw(){
 
     for (int i = 0; i < bigObjects.size(); i++) {
         bigObjects[i].drawBig();
-    }
-    
-    //こっから動体描画
-    for (int i = 0; i < ObjHumans.size(); i++) {
-        ObjHumans[i].draw();
     }
 
 <<<<<<< HEAD
@@ -325,6 +326,7 @@ void ofApp::gotMessage(ofMessage msg){
 void ofApp::dragEvent(ofDragInfo dragInfo){ 
 
 }
+<<<<<<< HEAD
 
 <<<<<<< HEAD
 =======
@@ -359,3 +361,5 @@ void ofApp::getMessage22(ofxOscMessage m){
         vely_ave = m.getArgAsInt32(1);
     }
 }
+=======
+>>>>>>> parent of 9dba286... kaeta
