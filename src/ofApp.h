@@ -35,6 +35,11 @@ class ofApp : public ofBaseApp{
     
     ofParameter<int> length_1;
     ofParameter<int> missThr;
+    ofParameter<int> scalex;//8bit
+    ofParameter<int> scaley;//8bit
+    ofParameter<int> scalez;//8bit
+    ofParameter<int> humanscale;
+    ofParameter<int> humansizeoffset;
     ofxPanel gui;
     
     void valChanged(int &val);
@@ -58,14 +63,22 @@ class ofApp : public ofBaseApp{
     vector<ObjHuman> ObjHumans;
     
     void getMessage2(ofxOscMessage m);
+    void getMessage4(ofxOscMessage m);
     void getMessage22(ofxOscMessage m);
     int velx_ave,vely_ave;
     
-    void addPoint(float x, float y, float z);
+    void addPoint(float x, float y, float z,float size);
+    void addPoint2(float x, float y, float z,float size);
+    
+    //2D 関連
+    bool bDraw2d;
     
     //3D CG 関連
+    bool bDraw3d;
     vector <ofVec3f> points;
     vector <ofVec3f> sizes;
+    vector <ofVec3f> points2;//間違ってるやつ
+    vector <ofVec3f> sizes2;
     
     ofVbo vbo;
     ofShader shader;

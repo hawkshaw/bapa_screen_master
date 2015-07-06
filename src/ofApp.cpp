@@ -24,6 +24,11 @@ void ofApp::setup(){
     gui.setup("panel");
     gui.add(length_1.set("length",400,200,800));
     gui.add(missThr.set("missThr", 30,1,200));//失敗と判定する閾値
+    gui.add(scalex.set("3d scale x", 30,1,256));
+    gui.add(scaley.set("3d scale y", 30,1,256));
+    gui.add(scalez.set("3d scale z", 30,1,256));
+    gui.add(humanscale.set("size scale", 2,1,10));
+    gui.add(humansizeoffset.set("size offset", 5,1,256));
     
     missThr.addListener(this, &ofApp::valChanged);
 
@@ -34,6 +39,8 @@ void ofApp::setup(){
     receiver.setup(12345);
     sender.setup(HOST, 12346);
     
+    //2D関連
+    bDraw2d = true;
     
     //ここから3D CG
     ofDisableArbTex();
@@ -57,7 +64,7 @@ void ofApp::setup(){
         p.z = cos( theta1 ) * sin( theta2 );
         p *= radius;
         
-        addPoint(p.x, p.y, p.z);
+        addPoint(p.x, p.y, p.z,10);
         
     }
     
@@ -109,6 +116,9 @@ void ofApp::update(){
         else if(m.getAddress() == "/mouse/position2"){ //名前をチェック
             getMessage2(m);
         }
+        else if(m.getAddress() == "/mouse/position4"){ //名前をチェック
+            getMessage4(m);
+        }
         else if(m.getAddress() == "/mouse/position22"){ //名前をチェック
             getMessage22(m);
         }
@@ -146,20 +156,49 @@ void ofApp::update(){
 
 
 //--------------------------------------------------------------
-void ofApp::addPoint(float x, float y, float z) {
+void ofApp::addPoint(float x, float y, float z,float size) {
     ofVec3f p(x, y, z);
     points.push_back(p);
     
     // we are passing the size in as a normal x position
-    float size = ofRandom(5, 50);
     sizes.push_back(ofVec3f(size));
+}
+
+void ofApp::addPoint2(float x, float y, float z,float size) {
+    ofVec3f p(x, y, z);
+    points2.push_back(p);
+    
+    // we are passing the size in as a normal x position
+    sizes2.push_back(ofVec3f(size));
 }
 
 //--------------------------------------------------------------
 void ofApp::draw3d(){
-    glDepthMask(GL_FALSE);
+    points.clear();
+    sizes.clear();
+    points2.clear();
+    sizes2.clear();
+
+    if(bDraw3d){
+        int buf_x,buf_y,buf_z,buf_speed;
+        for (int i = 0; i < ObjHumans.size(); i++) {
+            buf_x = ObjHumans[i].position.x;
+            buf_x = ((buf_x - 512)*scalex)>>5; //32等倍
+            buf_y = ObjHumans[i].position.y;
+            buf_y = ((buf_y - 512)*scaley)>>5; //32等倍
+            buf_z = (ObjHumans[i].positionz * scalez) >>5;//32等倍
+            buf_speed = (int)(ObjHumans[i].speed*humanscale/10+humansizeoffset);
+            if(ObjHumans[i].humanStd <= ObjHumans[i].objMissThr){
+                addPoint(buf_x, buf_y, buf_z,buf_speed);
+            }else{
+                addPoint2(buf_x, buf_y, buf_z,buf_speed);
+            }
+        }
+    }
     
-    ofSetColor(255, 100, 90);
+
+
+    glDepthMask(GL_FALSE);
     
     // this makes everything look glowy :)
     ofEnableBlendMode(OF_BLENDMODE_ADD);
@@ -174,11 +213,34 @@ void ofApp::draw3d(){
     // bind the texture so that when all the points
     // are drawn they are replace with our dot image
     texture.bind();
+    ofSetColor(0, 100, 255);
+    int total = (int)points.size();
+    vbo.setVertexData(&points[0], total, GL_STATIC_DRAW);
+    vbo.setNormalData(&sizes[0], total, GL_STATIC_DRAW);
     vbo.draw(GL_POINTS, 0, (int)points.size());
     texture.unbind();
     
     camera.end();
     shader.end();
+
+    shader.begin();
+    camera.begin();
+    
+    // bind the texture so that when all the points
+    // are drawn they are replace with our dot image
+    texture.bind();
+    ofSetColor(255, 100, 90);
+    total = (int)points2.size();
+    vbo.setVertexData(&points2[0], total, GL_STATIC_DRAW);
+    vbo.setNormalData(&sizes2[0], total, GL_STATIC_DRAW);
+    vbo.draw(GL_POINTS, 0, (int)points2.size());
+    texture.unbind();
+    
+    camera.end();
+    shader.end();
+    
+
+    
     
     ofDisablePointSprites();
     ofDisableBlendMode();
@@ -189,13 +251,14 @@ void ofApp::draw3d(){
     
     camera.begin();
     ofSetLineWidth(1);
-    for (unsigned int i=0; i<points.size(); i++) {
+    
+    /*for (unsigned int i=0; i<points.size(); i++) {
         ofSetColor(255, 80);
         ofVec3f mid = points[i];
         mid.normalize();
         mid *= 300;
         ofLine(points[i], mid);
-    }
+    }*/
     camera.end();
     
     glDepthMask(GL_TRUE);
@@ -268,8 +331,10 @@ void ofApp::draw(){
 //    ofCircle(x,y,30);
 
     //こっから動体描画
-    for (int i = 0; i < ObjHumans.size(); i++) {
-        ObjHumans[i].draw();
+    if(bDraw2d){
+        for (int i = 0; i < ObjHumans.size(); i++) {
+            ObjHumans[i].draw();
+        }
     }
     
     
@@ -363,8 +428,13 @@ void ofApp::keyPressed(int key){
     }
     else if(key == 'l') {
         gui.loadFromFile("settings.xml");
+    }else if(key == '2'){
+        bDraw2d = !bDraw2d;
+    }else if(key == '3'){
+        bDraw3d = !bDraw3d;
+    }else if(key == '4') {
+        points.clear();
     }
-
 }
 
 //--------------------------------------------------------------
@@ -435,10 +505,35 @@ void ofApp::getMessage2(ofxOscMessage m){
         int mouseStd;
         mouseStd = m.getArgAsInt32(j+mousenum/4*3);
         ObjHuman o;
-        o.setup(mouseX,mouseY,mouseID,mouseStd,missThr);
+        o.setup(mouseX,mouseY,0,5,mouseID,mouseStd,missThr);
         ObjHumans.push_back(o);
     }
 }
+
+//--------------------------------------------------------------
+void ofApp::getMessage4(ofxOscMessage m){
+    ObjHumans.clear();
+    int mousenum;
+    mousenum = m.getNumArgs();
+    for (int j=0 ; j < mousenum/4 ; j++){
+        //叩かれた座標
+        mouseX = m.getArgAsInt32(0+j*4);
+        mouseY = m.getArgAsInt32(1+j*4);
+        //物体検出id
+        int mouseZ;
+        mouseZ = m.getArgAsInt32(2+j*4);
+        int mouseSpeed;
+        mouseSpeed = m.getArgAsInt32(3+j*4);
+        //平均動きからのズレ
+        int mouseStd;
+        mouseStd = m.getArgAsInt32(j+mousenum/5*4);
+        ObjHuman o;
+        o.setup(mouseX,mouseY,mouseZ,mouseSpeed,0,mouseStd,missThr);
+        ObjHumans.push_back(o);
+    }
+}
+
+
 
 //--------------------------------------------------------------
 void ofApp::getMessage22(ofxOscMessage m){

@@ -13,8 +13,10 @@ ObjHuman::ObjHuman(){
     count = 0;
 }
 
-void ObjHuman::setup(float positionX, float positionY, int _id, int _mouseStd,int _objMissThr){
+void ObjHuman::setup(float positionX, float positionY,int positionZ, int _speed,int _id, int _mouseStd,int _objMissThr){
     position = ofVec2f(positionX, positionY);
+    positionz = positionZ;
+    speed = _speed;
     humanid = _id;
     humanStd = _mouseStd;
     objMissThr = _objMissThr;
