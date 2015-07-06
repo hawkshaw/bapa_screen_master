@@ -40,9 +40,11 @@ void ofApp::setup(){
     sender.setup(HOST, 12346);
     
     //2D関連
-    bDraw2d = true;
+    bDraw2d = false;
     
     //ここから3D CG
+    bDraw3d = true;
+
     ofDisableArbTex();
     ofLoadImage(texture, "dot.png");
     
