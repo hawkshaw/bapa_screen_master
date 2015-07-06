@@ -256,7 +256,13 @@ void ofApp::keyPressed(int key){
                 score += 300;
             }
         }
+    }else if(key == 's') {
+        gui.saveToFile("settings.xml");
     }
+    else if(key == 'l') {
+        gui.loadFromFile("settings.xml");
+    }
+
 }
 
 //--------------------------------------------------------------
