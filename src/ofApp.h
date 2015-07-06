@@ -14,6 +14,7 @@ class ofApp : public ofBaseApp{
 		void setup();
 		void update();
 		void draw();
+        void draw3d();
 
 		void keyPressed(int key);
 		void keyReleased(int key);
@@ -59,4 +60,17 @@ class ofApp : public ofBaseApp{
     void getMessage2(ofxOscMessage m);
     void getMessage22(ofxOscMessage m);
     int velx_ave,vely_ave;
+    
+    void addPoint(float x, float y, float z);
+    
+    //3D CG 関連
+    vector <ofVec3f> points;
+    vector <ofVec3f> sizes;
+    
+    ofVbo vbo;
+    ofShader shader;
+    ofEasyCam camera;
+    float camDist;
+    ofTexture texture;
+    
 };
