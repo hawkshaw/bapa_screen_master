@@ -4,8 +4,9 @@
 void ofApp::setup(){
     //ofBackground(0);
     //ofSetVerticalSync(true);
+    //ofEnableSmoothing();
     grabber.initGrabber(640, 360);
-    ofSetCircleResolution(32);
+    ofSetCircleResolution(64);
     
     img.loadImage("screen.png");
     
@@ -15,7 +16,7 @@ void ofApp::setup(){
     bMusicPlay = false;
     bMusicReset = false;
     
-    judgeLine = 440;
+    judgeLine = 280;
     score = 0;
     
     //objVelocity = 3.9095f;
@@ -272,8 +273,8 @@ void ofApp::draw(){
     
     ofSetColor(255);
     
-    //if(bHideImage) img.draw(0,0);
-    //else grabber.draw(0, 0, ofGetWidth(), ofGetHeight());
+    if(bHideImage) img.draw(0,0);
+    else grabber.draw(0, 0, ofGetWidth(), ofGetHeight());
     
 //    ofSetColor(100, 200);
 //    ofRect(0, 0, ofGetWidth(), 250);
@@ -283,23 +284,30 @@ void ofApp::draw(){
     //ここまで3D CG
 
     ofSetColor(255);
-    ofSetLineWidth(3.5);
-    ofLine(0, 40, ofGetWidth(), 40);
+//    ofSetLineWidth(1);
+    //ofLine(0, 40, ofGetWidth(), 40);
     ofLine(0, 120, ofGetWidth(), 120);
-    ofLine(0, 200, ofGetWidth(), 200);
+    //ofLine(0, 200, ofGetWidth(), 200);
     //ofLine(0, 250, ofGetWidth(), 250);
     //ofSetLineWidth(4);
-    //ofLine(judgeLine, 0, judgeLine, 230);
+    ofLine(judgeLine, 0, judgeLine, 240);
+    ofNoFill();
+    ofCircle(judgeLine, 120, 35);
     ofFill();
     for(int i=0;i<16;i++){
-        ofCircle(i*80+40, 40, 6.5);
-        ofCircle(i*80+40, 120, 6.5);
-        ofCircle(i*80+40, 200, 6.5);
+//        ofCircle(i*80+40, 40, 6.5);
+//        ofCircle(i*80+40, 120, 6.5);
+//        ofCircle(i*80+40, 200, 6.5);
+        ofLine(i*80+40, 115, i*80+40, 125);
     }
-    for(int i=0;i<3;i++){
-        ofSetColor(150);
-        ofCircle(judgeLine, i*80+40, 35);
-    }
+//    for(int i=0;i<3;i++){
+//        ofSetColor(150);
+//        ofCircle(judgeLine, i*80+40, 35);
+//    }
+    
+//    ofSetColor(150);
+//    ofCircle(judgeLine, 120, 35);
+
     
     //ofSetColor(0, 0, 255);
     for (int i = 0; i < Objects.size(); i++) {
@@ -320,10 +328,8 @@ void ofApp::draw(){
         bigObjects[i].drawBig();
     }
 
-    if(bHideGui) gui.draw();
-    
-    ofSetColor(255);
-    ofRect(0, 0, judgeLine-80, 250);
+    //ofSetColor(255);
+    //ofRect(0, 0, judgeLine-80, 250);
     
 //    float timer = ofGetElapsedTimeMillis() - startTime;
 //    int x = ofGetWidth() - timer/3.561f;
