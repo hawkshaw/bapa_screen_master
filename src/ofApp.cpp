@@ -523,18 +523,18 @@ void ofApp::getMessage4(ofxOscMessage m){
     ObjHumans.clear();
     int mousenum;
     mousenum = m.getNumArgs();
-    for (int j=0 ; j < mousenum/4 ; j++){
+    for (int j=0 ; j < mousenum/5 ; j++){
         //叩かれた座標
-        mouseX = m.getArgAsInt32(0+j*4);
-        mouseY = m.getArgAsInt32(1+j*4);
+        mouseX = m.getArgAsInt32(0+j*5);
+        mouseY = m.getArgAsInt32(1+j*5);
         //物体検出id
         int mouseZ;
-        mouseZ = m.getArgAsInt32(2+j*4);
+        mouseZ = m.getArgAsInt32(2+j*5);
         int mouseSpeed;
-        mouseSpeed = m.getArgAsInt32(3+j*4);
+        mouseSpeed = m.getArgAsInt32(3+j*5);
         //平均動きからのズレ
         int mouseStd;
-        mouseStd = m.getArgAsInt32(j+mousenum/5*4);
+        mouseStd = m.getArgAsInt32(4+j*5);
         ObjHuman o;
         o.setup(mouseX,mouseY,mouseZ,mouseSpeed,0,mouseStd,missThr);
         ObjHumans.push_back(o);
