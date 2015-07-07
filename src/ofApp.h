@@ -10,6 +10,8 @@
 
 
 class ofApp : public ofBaseApp{
+    private:
+        ofTrueTypeFont font;
 	public:
 		void setup();
 		void update();
@@ -29,9 +31,13 @@ class ofApp : public ofBaseApp{
     ofImage img;
     ofVideoGrabber grabber;
     bool bHideImage;
+    bool bBlack;
     bool bHideGui;
     int judgeLine;
     int score;
+    
+    int syncScore = 0;
+    
     
     ofParameter<int> length_1;
     ofParameter<int> missThr;
@@ -40,6 +46,7 @@ class ofApp : public ofBaseApp{
     ofParameter<int> scalez;//8bit
     ofParameter<int> humanscale;
     ofParameter<int> humansizeoffset;
+    ofParameter<int> timelineMethod;
     ofxPanel gui;
     
     void valChanged(int &val);
@@ -69,7 +76,7 @@ class ofApp : public ofBaseApp{
     
     void addPoint(float x, float y, float z,float size);
     void addPoint2(float x, float y, float z,float size);
-    
+        
     //2D 関連
     bool bDraw2d;
     

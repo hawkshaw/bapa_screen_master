@@ -11,6 +11,7 @@ void ofApp::setup(){
     img.loadImage("screen.png");
     
     bHideImage = false;
+    bBlack = false;
     bHideGui = false;
     bMusicStop = false;
     bMusicPlay = false;
@@ -30,6 +31,7 @@ void ofApp::setup(){
     gui.add(scalez.set("3d scale z", 30,1,256));
     gui.add(humanscale.set("size scale", 2,1,10));
     gui.add(humansizeoffset.set("size offset", 5,1,256));
+    gui.add(timelineMethod.set("Timeline Draw Method", 0,0,3));
     
     missThr.addListener(this, &ofApp::valChanged);
 
@@ -39,6 +41,8 @@ void ofApp::setup(){
     
     receiver.setup(12345);
     sender.setup(HOST, 12346);
+    
+    font.loadFont("Avenir.ttc", 72);
     
     //2D関連
     bDraw2d = false;
@@ -128,6 +132,9 @@ void ofApp::update(){
     }
     
     for (int i = 0; i < Objects.size(); i++){
+        if(Objects[i].nowCount > Objects[i].frightCount){
+            Objects.erase(Objects.begin()+i);
+        }
         if(Objects[i].position.x < -Objects[i].radius){
             Objects.erase(Objects.begin()+i);
             score -= 100;
@@ -143,6 +150,9 @@ void ofApp::update(){
     }
     
     for (int i = 0; i < bigObjects.size(); i++){
+        if(bigObjects[i].nowCount > bigObjects[i].frightCount){
+            bigObjects.erase(bigObjects.begin()+i);
+        }
         if(bigObjects[i].position.x < -bigObjects[i].radius){
             bigObjects.erase(bigObjects.begin()+i);
         }
@@ -273,8 +283,10 @@ void ofApp::draw(){
     
     ofSetColor(255);
     
-    if(bHideImage) img.draw(0,0);
-    else grabber.draw(0, 0, ofGetWidth(), ofGetHeight());
+    if(!bBlack){
+        if(bHideImage) img.draw(0,0);
+        else grabber.draw(0, 0, ofGetWidth(), ofGetHeight());
+    }
     
 //    ofSetColor(100, 200);
 //    ofRect(0, 0, ofGetWidth(), 250);
@@ -345,6 +357,15 @@ void ofApp::draw(){
         }
     }
     
+    //シンクロ率表示
+    ofSetColor(255);
+    if(sizes.size() || sizes2.size()){
+        syncScore = ((int)(sizes.size()*100/(sizes.size()+sizes2.size())) + syncScore*3)/4;
+        if(syncScore > 98){
+            syncScore = 100;
+        }
+        font.drawString(ofToString(syncScore),100,100);
+    }
     
     if(!bHideGui) gui.draw();
     
@@ -367,10 +388,12 @@ void ofApp::draw(){
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
+    if(key == 'b') bBlack = !bBlack;
     if(key == 'h') bHideImage = !bHideImage;
     else if(key == 'g') bHideGui = !bHideGui;
     else if(key == 'z'){
         Obj o;
+        o.setDrawMethod(timelineMethod);
         o.setup(ofVec2f(ofGetWidth(),40), objVelocity);
         Objects.push_back(o);
     }
@@ -381,6 +404,7 @@ void ofApp::keyPressed(int key){
     }
     else if(key == 'c'){
         Obj o;
+        o.setDrawMethod(timelineMethod);
         o.setup(ofVec2f(ofGetWidth(),200), objVelocity);
         bigObjects.push_back(o);
     }
