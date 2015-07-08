@@ -33,6 +33,7 @@ public:
     ofVec2f position;
     ofVec2f velocity;
     float radius;
+    float radius_ori;
     bool bFixed;
     
     int alphaPoint = 128;//点の不透明度

@@ -10,6 +10,7 @@
 
 Obj::Obj(){
     radius = 40;
+    radius_ori = radius;
     bFixed = false;
     startTime = ofGetElapsedTimeMillis();
     frightCount = (int)((ofGetWidth()-280)/3.8925);
@@ -48,9 +49,9 @@ void Obj::setupBezier(ofVec2f _position){
                 setEndPosition(ofGetWidth()/2, ofGetHeight());
                 break;
             default:
-                setStartPosition(ofGetWidth()/2, 0);
-                setEndPosition(ofGetWidth()/2, ofGetHeight());
-                setMidPosition(0, 200, 0, 400);
+                setStartPosition(ofGetWidth()*3/4, ofGetWidth()/20);
+                setEndPosition(ofGetWidth()/4, ofGetHeight()*9/10);
+                setMidPosition(ofGetWidth()/4, 200, 0, 400);
                 break;
         }
     }
@@ -76,6 +77,7 @@ void Obj::update(){
     if(timelineMethod){
         nowCount++;
         calcPosition(nowCount);
+        radius=radius_ori*nowCount/frightCount;
     }
 }
 

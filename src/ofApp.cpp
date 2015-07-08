@@ -296,6 +296,8 @@ void ofApp::draw(){
     //ここまで3D CG
 
     ofSetColor(255);
+    
+    if(timelineMethod<=1){
 //    ofSetLineWidth(1);
     //ofLine(0, 40, ofGetWidth(), 40);
     ofLine(0, 120, ofGetWidth(), 120);
@@ -319,6 +321,26 @@ void ofApp::draw(){
     
 //    ofSetColor(150);
 //    ofCircle(judgeLine, 120, 35);
+    }
+    
+    //タイムラインのガイドライン
+    if(timelineMethod>1){
+        ofSetLineWidth(1);
+        Obj buf_o;
+        buf_o.setDrawMethod(timelineMethod);
+        buf_o.setup(0,0,0);
+        ofVec2f p1,p2;
+        p1=buf_o.positionStart;
+        for(int i=0;i<buf_o.frightCount;i++){
+            buf_o.update();
+            p2=buf_o.position;
+            ofLine(p1,p2);
+            p1=p2;
+        }
+        ofNoFill();
+        ofCircle(buf_o.positionEnd, 35);
+        ofFill();
+    }
 
     
     //ofSetColor(0, 0, 255);
