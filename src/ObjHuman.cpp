@@ -10,6 +10,8 @@
 
 ObjHuman::ObjHuman(){
     radius = 20;
+    width=ofRandom(10,30);
+    //height = 20;
     count = 0;
 }
 
@@ -27,18 +29,19 @@ void ObjHuman::update(){
 }
 
 void ObjHuman::draw(){
-    ofSetColor(255);
-    ofCircle(position, radius);
+//    ofSetColor(255);
+//    ofCircle(position, radius);
     if(humanStd <= objMissThr){
-        ofSetColor(0, 0, 255);
+        ofSetColor(132, 193, 255);
     }else{
-        ofSetColor(255, 0, 0);
+        ofSetColor(255, 198, 142);
     }
-    if(humanStd < 0){
-        ofSetColor(0, 0, 0);
-    }
-    ofCircle(position, radius*0.85);
+//    if(humanStd < 0){
+//        ofSetColor(0, 0, 0);
+//    }
+    //ofCircle(position, radius*0.85);
+    ofRect(position.x-width/2, position.y-width/2, width, width);
     string msg = ofToString(humanStd);
     ofSetColor(0, 255, 0);
-    ofDrawBitmapString(msg, position.x,position.y);
+    //ofDrawBitmapString(msg, position.x,position.y);
 }

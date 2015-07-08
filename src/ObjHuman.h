@@ -28,4 +28,7 @@ public:
     float radius;
     float length;
     int objMissThr;
+    
+    int width;
+    int height;
 };

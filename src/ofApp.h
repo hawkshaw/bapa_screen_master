@@ -5,6 +5,7 @@
 #include "ObjHuman.h"
 #include "ofxGui.h"
 #include "ofxOsc.h"
+#include "ofxXmlSettings.h"
 
 #define HOST "localhost"
 
@@ -12,6 +13,7 @@
 class ofApp : public ofBaseApp{
     private:
         ofTrueTypeFont font;
+    ofTrueTypeFont font2;
 	public:
 		void setup();
 		void update();
@@ -33,6 +35,7 @@ class ofApp : public ofBaseApp{
     bool bHideImage;
     bool bBlack;
     bool bHideGui;
+    bool bHideInfo;
     int judgeLine;
     int score;
     
@@ -47,11 +50,19 @@ class ofApp : public ofBaseApp{
     ofParameter<int> humanscale;
     ofParameter<int> humansizeoffset;
     ofParameter<int> timelineMethod;
+    
+    ofParameter<ofColor> color1;
+    ofParameter<ofColor> color2;
+    ofParameter<ofColor> color3;
+    
     ofxPanel gui;
     
     void valChanged(int &val);
 
-    vector<Obj> Objects;
+    vector<Obj> Objects1;
+    vector<Obj> Objects2;
+    vector<Obj> Objects3;
+    vector<Obj> Objects4;
     vector<Obj> longObjects;
     vector<Obj> bigObjects;
     
@@ -86,6 +97,8 @@ class ofApp : public ofBaseApp{
     vector <ofVec3f> sizes;
     vector <ofVec3f> points2;//間違ってるやつ
     vector <ofVec3f> sizes2;
+    vector<float> boxScale;
+    vector<float> boxScale2;
     
     ofVbo vbo;
     ofShader shader;
