@@ -10,23 +10,28 @@
 
 ObjRoad::ObjRoad(){
     offsetZ = -20;
-    Ythr1 = 600;
-    Ythr2 = 800;
+    Ythr1 = 400;
+    Ythr2 = 1200;
     width = 20;
     speed = 30.0;
     count = 0;
 }
 
 ofVec4f ObjRoad::getLeftPos(int idx){
-    float ybuf;
+    float ybuf,ybuf2;
     int wbuf;
     ybuf=idx*width;
-    if(ybuf <= Ythr1 && ybuf >=(-Ythr1)){
-        wbuf=0;
-    }else if(Ythr2 <= ybuf || ybuf<=(-Ythr2)){
+    ybuf2=idx*width-count*speed;
+    if(ybuf2 <= Ythr1 && ybuf2 >=(-Ythr1)){
         wbuf=255;
+    }else if(Ythr2 <= ybuf2 || ybuf2<=(-Ythr2)){
+        wbuf=0;
     }else{
-        wbuf=(int)(255.0*(ybuf-Ythr1)/(Ythr2-Ythr1));
+        if(ybuf2>0){
+            wbuf=(int)(255.0*(Ythr2-ybuf2)/(Ythr2-Ythr1));
+        }else{
+            wbuf=(int)(255.0*(Ythr2-(-ybuf2))/(Ythr2-Ythr1));
+        }
     }
     return ofVec4f(150*sin(idx/20.0),ybuf,(float)offsetZ,(float)wbuf);
 }
@@ -47,8 +52,57 @@ void ObjRoad::update(){
 }
 
 
+//ライブハウスフレーム
+ObjFrame::ObjFrame(){
+}
 
+void ObjFrame::setup(int _scalex,int _scaley,int _scalez,int _xoffset,int _yoffset){
+    int bufxl = ((-512 - _xoffset)*_scalex)>>5; //32等倍
+    int bufxr = ((512 - _xoffset)*_scalex)>>5; //32等倍
+    int bufyt = ((-512 - _yoffset)*_scaley)>>5; //32等倍
+    int bufyb = ((512 - _yoffset)*_scaley)>>5; //32等倍
+    posFrom.clear();
+    posTo.clear();
+    posFrom.push_back(ofVec3f(bufxl,bufyt,0));
+    posTo.push_back(ofVec3f(bufxr,bufyt,0));
+    posFrom.push_back(ofVec3f(bufxl,bufyb,0));
+    posTo.push_back(ofVec3f(bufxr,bufyb,0));
+    posFrom.push_back(ofVec3f(bufxl,bufyt,0));
+    posTo.push_back(ofVec3f(bufxl,bufyb,0));
+    posFrom.push_back(ofVec3f(bufxr,bufyt,0));
+    posTo.push_back(ofVec3f(bufxr,bufyb,0));
+    int h = 100;
+    posFrom.push_back(ofVec3f(bufxl,bufyt,h));
+    posTo.push_back(ofVec3f(bufxr,bufyt,h));
+    posFrom.push_back(ofVec3f(bufxl,bufyb,h));
+    posTo.push_back(ofVec3f(bufxr,bufyb,h));
+    posFrom.push_back(ofVec3f(bufxl,bufyt,h));
+    posTo.push_back(ofVec3f(bufxl,bufyb,h));
+    posFrom.push_back(ofVec3f(bufxr,bufyt,h));
+    posTo.push_back(ofVec3f(bufxr,bufyb,h));
 
+    posFrom.push_back(ofVec3f(bufxl,bufyt,0));
+    posTo.push_back(ofVec3f(bufxl,bufyt,h));
+    posFrom.push_back(ofVec3f(bufxl,bufyb,0));
+    posTo.push_back(ofVec3f(bufxl,bufyb,h));
+    posFrom.push_back(ofVec3f(bufxr,bufyt,0));
+    posTo.push_back(ofVec3f(bufxr,bufyt,h));
+    posFrom.push_back(ofVec3f(bufxr,bufyb,0));
+    posTo.push_back(ofVec3f(bufxr,bufyb,h));
+}
+
+void ObjFrame::draw(){
+    ofSetLineWidth(1);
+    ofSetColor(255,255,255,128);
+    for(int i =0; i<posFrom.size();i++){
+        ofLine(posFrom[i], posTo[i]);
+    }
+}
+
+void ObjFrame::update(){
+}
+
+//観客ノードオブジェクト
 ObjHuman::ObjHuman(){
     radius = 20;
     width=ofRandom(10,30);

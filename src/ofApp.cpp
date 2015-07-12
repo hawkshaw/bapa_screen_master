@@ -40,6 +40,9 @@ void ofApp::setup(){
     gui.add(color3.set("color3", ofColor(255,255,255,255),ofColor(0,0,0,0),ofColor(255,255,255,255)));
     
     missThr.addListener(this, &ofApp::valChanged);
+    scalex.addListener(this, &ofApp::valChanged);
+    scaley.addListener(this, &ofApp::valChanged);
+    scalez.addListener(this, &ofApp::valChanged);
 
     startTime = ofGetElapsedTimeMillis();
     
@@ -62,6 +65,7 @@ void ofApp::setup(){
     
     //3D Object
     cameraId = 1;
+    objFrame.setup(scalex, scaley, scalez, objFrameOffsetx, objFrameOffsety);
     
     // set the camera distance
     camDist  = 1605;
@@ -108,6 +112,7 @@ void ofApp::setup(){
 }
 
 void ofApp::valChanged(int &val){
+    objFrame.setup(scalex, scaley, scalez, objFrameOffsetx, objFrameOffsety);
 }
 
 
@@ -240,6 +245,8 @@ void ofApp::addPoint2(float x, float y, float z,float size) {
 
 //--------------------------------------------------------------
 void ofApp::draw3d(){
+    //ofEnableDepthTest();
+
     points.clear();
     sizes.clear();
     points2.clear();
@@ -289,14 +296,49 @@ void ofApp::draw3d(){
     ofEnableBlendMode(OF_BLENDMODE_ADD);//加算描画 this makes everything look glowy
     ofEnablePointSprites();
     
+    
+    //道路表示
+    shader2.begin();
+    camera2.begin();
+    ofVec4f bufpos,bufpos_1f;
+    for(int i=objRoad.getIdxStart();i<objRoad.getIdxEnd();i++){
+        bufpos = objRoad.getLeftPos(i);
+        int roadwidth = objRoad.getRoadWidth(i);
+        if(i==objRoad.getIdxStart()){
+            continue;
+        }
+        //ofSetColor(rainbow[(i/10)%7][0],rainbow[(i/10)%7][1],rainbow[(i/10)%7][2],bufpos.w);
+        ofSetColor(0,200,0,bufpos.w);
+        ofBoxPrimitive buf_box;
+        buf_box = ofBoxPrimitive(roadwidth, objRoad.width, 1);
+        buf_box.setPosition(bufpos_1f.x, bufpos_1f.y+objRoad.width/2, bufpos.z);
+        buf_box.draw();
+        if(i%20==0){
+            ofSetColor(255,0,0,255);
+            ofSpherePrimitive a;
+            a = ofSpherePrimitive(10, 20);
+            a.setPosition(bufpos_1f.x, bufpos_1f.y, 0);
+            a.draw();
+            ofBoxPrimitive b;
+            b = ofBoxPrimitive(roadwidth, 3, 20);
+            b.setPosition(bufpos_1f.x, bufpos_1f.y, bufpos.z);
+            b.draw();
+        }
+        bufpos_1f = bufpos;
+    }
+    camera2.end();
+    shader2.end();
+
+    
     //観客描画
+    ofEnableBlendMode(OF_BLENDMODE_ADD);//加算描画 this makes everything look glowy
     if(bDraw3d){
         int buf_x,buf_y,buf_z,buf_speed;
         for (int i = 0; i < ObjHumans.size(); i++) {
             buf_x = ObjHumans[i].position.x;
-            buf_x = ((buf_x - 512)*scalex)>>5; //32等倍
+            buf_x = ((buf_x - 512 - objFrameOffsetx)*scalex)>>5; //32等倍
             buf_y = ObjHumans[i].position.y;
-            buf_y = ((buf_y - 2048)*scaley)>>5; //32等倍
+            buf_y = ((buf_y - 512 - objFrameOffsety)*scaley)>>5; //32等倍
             buf_z = (ObjHumans[i].positionz * scalez) >>5;//32等倍
             buf_speed = (int)(ObjHumans[i].speed*humanscale/50+humansizeoffset);
             if(ObjHumans[i].humanStd <= ObjHumans[i].objMissThr){
@@ -333,9 +375,11 @@ void ofApp::draw3d(){
 //        camera.end();
         
     }
-    
-
     glDepthMask(GL_FALSE);
+
+    
+    
+    
     
     // this makes everything look glowy :)
     ofEnablePointSprites();
@@ -343,72 +387,29 @@ void ofApp::draw3d(){
     shader.begin();
     camera.begin();
     texture.bind();
-    //ofSetColor(132, 193, 255);
     ofSetColor(0, 100, 255);
-    //ofSetColor(color1);
     int total = (int)points.size();
     vbo.setVertexData(&points[0], total, GL_STATIC_DRAW);
     vbo.setNormalData(&sizes[0], total, GL_STATIC_DRAW);
     vbo.draw(GL_POINTS, 0, (int)points.size());
     
-    camera.end();
-    shader.end();
-
-    shader.begin();
-    camera.begin();
-    
-    // bind the texture so that when all the points
-    // are drawn they are replace with our dot image
-    texture.bind();
-    //ofSetColor(255, 198, 142);
     ofSetColor(255, 100, 90);
-    //ofSetColor(color2);
     total = (int)points2.size();
     vbo.setVertexData(&points2[0], total, GL_STATIC_DRAW);
     vbo.setNormalData(&sizes2[0], total, GL_STATIC_DRAW);
     vbo.draw(GL_POINTS, 0, (int)points2.size());
     texture.unbind();
+
+    ofDisableBlendMode();
+    
+    //ライブハウスグリッド描画
+    objFrame.draw();
+    
     camera.end();
     shader.end();
     
-    ofDisableBlendMode();
-    //ライブハウスグリッド描画
     
     
-    
-    //道路表示
-    shader2.begin();
-    camera2.begin();
-    ofVec4f bufpos,bufpos_1f;
-    for(int i=objRoad.getIdxStart();i<objRoad.getIdxEnd();i++){
-        bufpos = objRoad.getLeftPos(i);
-        //ofSetColor(255, 255,255,bufpos.w);
-        ofSetColor(255, 255-i*10,255-i*10);
-        int roadwidth = objRoad.getRoadWidth(i);
-        if(i==objRoad.getIdxStart()){
-            continue;
-        }
-        ofSetColor(rainbow[(i/10)%7][0],rainbow[(i/10)%7][1],rainbow[(i/10)%7][2],bufpos.w);
-        ofSetColor(0,200,0,bufpos.w);
-        ofBoxPrimitive buf_box;
-        buf_box = ofBoxPrimitive(roadwidth, objRoad.width, 1);
-        buf_box.setPosition(bufpos_1f.x, bufpos_1f.y+objRoad.width/2, bufpos.z);
-        buf_box.draw();
-        if(i%20==0){
-            ofSetColor(255,0,0,255);
-            ofSpherePrimitive a;
-            a = ofSpherePrimitive(10, 20);
-            a.setPosition(bufpos_1f.x, bufpos_1f.y, 0);
-            a.draw();
-            ofBoxPrimitive b;
-            b = ofBoxPrimitive(roadwidth, 3, 20);
-            b.setPosition(bufpos_1f.x, bufpos_1f.y, bufpos.z);
-            b.draw();
-        }
-        bufpos_1f = bufpos;
-    }
-    camera2.end();
-    shader2.end();
 
     ofDisablePointSprites();
     ofDisableBlendMode();

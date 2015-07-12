@@ -33,6 +33,16 @@ public:
     int height;
 };
 
+//ライブハウスオブジェクト
+class ObjFrame{
+public:
+    ObjFrame();
+    void setup(int _scalex,int _scaley,int _scalez,int _xoffset,int _yoffset);
+    void update();
+    void draw();
+    vector <ofVec3f> posFrom;
+    vector <ofVec3f> posTo;
+};
 
 //道オブジェクト
 class ObjRoad{

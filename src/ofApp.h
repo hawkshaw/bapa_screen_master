@@ -13,7 +13,7 @@
 class ofApp : public ofBaseApp{
     private:
         ofTrueTypeFont font;
-    ofTrueTypeFont font2;
+        ofTrueTypeFont font2;
 	public:
 		void setup();
 		void update();
@@ -40,7 +40,6 @@ class ofApp : public ofBaseApp{
     int score;
     
     int syncScore = 0;
-    
     
     ofParameter<int> length_1;
     ofParameter<int> missThr;
@@ -99,6 +98,9 @@ class ofApp : public ofBaseApp{
     vector <ofVec3f> sizes2;
     //3D Object
     ObjRoad objRoad;
+    ObjFrame objFrame;
+    int objFrameOffsetx = 0;
+    int objFrameOffsety = 0;//1536;
     vector<float> boxScale;
     vector<float> boxScale2;
     
