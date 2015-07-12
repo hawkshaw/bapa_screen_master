@@ -14,7 +14,10 @@ class Obj {
 public:
     Obj();
     
-    void setup(ofVec2f _position, float _velocity);
+    void setup1(ofVec2f _position, float _velocity);
+    void setup2(ofVec2f _position, float _velocity);
+    void setup3(ofVec2f _position, float _velocity);
+    void setup4(ofVec2f _position, float _velocity);
     void setup(float positionX, float positionY, float velocity);
     void setupBezier(ofVec2f _position);
     void setDrawMethod(int a);
@@ -23,12 +26,21 @@ public:
     void updatePos();
     void update();
     void draw();
+     void draw1();
+     void draw2();
+     void draw3();
+     void draw4();
     void drawLong();
     void drawBig();
     void timeReset();
     void fillRed();
     
     float objVelocity;
+    
+    ofImage img1;
+    ofImage img2;
+    ofImage img3;
+    ofImage img4;
     
     ofVec2f position;
     ofVec2f velocity;

@@ -28,6 +28,9 @@ public:
     float radius;
     float length;
     int objMissThr;
+    
+    int width;
+    int height;
 };
 
 
@@ -47,4 +50,5 @@ public:
     int width;//描画短冊の幅
     int Ythr1;//消え始めるY閾値
     int Ythr2;//完全に消えるY閾値
+
 };

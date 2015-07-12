@@ -17,12 +17,38 @@ Obj::Obj(){
     nowCount=0;
 }
 
-void Obj::setup(ofVec2f _position, float _velocity){
+void Obj::setup1(ofVec2f _position, float _velocity){
     position = _position;
     objVelocity = _velocity;
     startTime = ofGetElapsedTimeMillis();
     setupBezier(_position);
+    img1.loadImage("up.png");
 }
+
+void Obj::setup2(ofVec2f _position, float _velocity){
+    position = _position;
+    objVelocity = _velocity;
+    startTime = ofGetElapsedTimeMillis();
+    setupBezier(_position);
+    img2.loadImage("right.png");
+}
+
+void Obj::setup3(ofVec2f _position, float _velocity){
+    position = _position;
+    objVelocity = _velocity;
+    startTime = ofGetElapsedTimeMillis();
+    setupBezier(_position);
+    img3.loadImage("left.png");
+}
+
+void Obj::setup4(ofVec2f _position, float _velocity){
+    position = _position;
+    objVelocity = _velocity;
+    startTime = ofGetElapsedTimeMillis();
+    setupBezier(_position);
+    img4.loadImage("hand.png");
+}
+
 
 void Obj::setDrawMethod(int a){
     timelineMethod = a;
@@ -81,6 +107,18 @@ void Obj::update(){
     }
 }
 
+void Obj::draw1(){
+    img1.draw(position+ofVec2f(-35, -35),70,70);
+}
+void Obj::draw2(){
+    img2.draw(position+ofVec2f(-35, -35),70,70);
+}
+void Obj::draw3(){
+    img3.draw(position+ofVec2f(-35, -35),70,70);
+}
+void Obj::draw4(){
+    img4.draw(position+ofVec2f(-40, -40),80,80);
+}
 
 void Obj::draw(){
     ofSetColor(255,alphaPoint);
@@ -104,9 +142,9 @@ void Obj::drawLong(){
 
 void Obj::drawBig(){
     ofSetColor(255,alphaPoint);
-    ofCircle(position, radius*1.5);
+    ofCircle(position, radius);
     ofSetColor(255, 0, 0,alphaPoint);
-    ofCircle(position, radius*1.5*0.85);
+    ofCircle(position, radius*0.85);
 }
 
 void Obj::timeReset(){

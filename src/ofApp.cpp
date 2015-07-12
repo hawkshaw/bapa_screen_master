@@ -9,11 +9,12 @@ void ofApp::setup(){
     grabber.initGrabber(640, 360);
     ofSetCircleResolution(64);
     
-    img.loadImage("screen.png");
+    img.loadImage("sora.jpg");
     
     bHideImage = false;
     bBlack = false;
     bHideGui = false;
+    bHideInfo = false;
     bMusicStop = false;
     bMusicPlay = false;
     bMusicReset = false;
@@ -21,8 +22,9 @@ void ofApp::setup(){
     judgeLine = 280;
     score = 0;
     
-    //objVelocity = 3.9095f;
-    objVelocity = 3.8925f;
+    objVelocity = 3.9355f;
+    //objVelocity = 3.8925f;
+    //objVelocity = 4.0655f;
     
     gui.setup("panel");
     gui.add(length_1.set("length",400,200,800));
@@ -33,6 +35,9 @@ void ofApp::setup(){
     gui.add(humanscale.set("size scale", 2,1,10));
     gui.add(humansizeoffset.set("size offset", 5,1,256));
     gui.add(timelineMethod.set("Timeline Draw Method", 0,0,3));
+    gui.add(color1.set("color1", ofColor(109,184,255,255),ofColor(0,0,0,0),ofColor(255,255,255,255)));
+    gui.add(color2.set("color2", ofColor(215,87,109,149),ofColor(0,0,0,0),ofColor(255,255,255,255)));
+    gui.add(color3.set("color3", ofColor(255,255,255,255),ofColor(0,0,0,0),ofColor(255,255,255,255)));
     
     missThr.addListener(this, &ofApp::valChanged);
 
@@ -44,6 +49,7 @@ void ofApp::setup(){
     sender.setup(HOST, 12346);
     
     font.loadFont("Avenir.ttc", 72);
+    font2.loadFont("Avenir.ttc", 36);
     
     //2D関連
     bDraw2d = false;
@@ -118,19 +124,24 @@ void ofApp::update(){
         
         if(m.getAddress() == "/bang"){ //名前をチェック
             Obj o;
-            o.setup(ofVec2f(ofGetWidth(),40), objVelocity);
-            Objects.push_back(o);
+            o.setup3(ofVec2f(ofGetWidth(),120), objVelocity);
+            Objects3.push_back(o);
             //cout << "bang fired" << endl;
         }
-        else if(m.getAddress() == "/bang/long"){ //名前をチェック
+        else if(m.getAddress() == "/bang/up"){ //名前をチェック
             Obj o;
-            o.setupLong(ofVec2f(ofGetWidth(),120), objVelocity, length_1);
-            longObjects.push_back(o);
+            o.setup1(ofVec2f(ofGetWidth(),120), objVelocity);
+            Objects1.push_back(o);
         }
-        else if(m.getAddress() == "/bang/big"){ //名前をチェック
+        else if(m.getAddress() == "/bang/right"){ //名前をチェック
             Obj o;
-            o.setup(ofVec2f(ofGetWidth(),200), objVelocity);
-            bigObjects.push_back(o);
+            o.setup2(ofVec2f(ofGetWidth(),120), objVelocity);
+            Objects2.push_back(o);
+        }
+        else if(m.getAddress() == "/bang/clap"){ //名前をチェック
+            Obj o;
+            o.setup4(ofVec2f(ofGetWidth(),120), objVelocity);
+            Objects4.push_back(o);
         }
         else if(m.getAddress() == "/mouse/position2"){ //名前をチェック
             getMessage2(m);
@@ -143,15 +154,44 @@ void ofApp::update(){
         }
     }
     
-    for (int i = 0; i < Objects.size(); i++){
-        if(Objects[i].nowCount > Objects[i].frightCount){
-            Objects.erase(Objects.begin()+i);
+    for (int i = 0; i < Objects1.size(); i++){
+        if(Objects1[i].nowCount > Objects1[i].frightCount){
+            Objects1.erase(Objects1.begin()+i);
         }
-        if(Objects[i].position.x < -Objects[i].radius){
-            Objects.erase(Objects.begin()+i);
-            score -= 100;
+        if(Objects1[i].position.x < judgeLine+1){
+            Objects1.erase(Objects1.begin()+i);
         }
-        Objects[i].update();
+        Objects1[i].update();
+    }
+    
+    for (int i = 0; i < Objects2.size(); i++){
+        if(Objects2[i].nowCount > Objects2[i].frightCount){
+            Objects2.erase(Objects2.begin()+i);
+        }
+        if(Objects2[i].position.x < judgeLine+1){
+            Objects2.erase(Objects2.begin()+i);
+        }
+        Objects2[i].update();
+    }
+
+    for (int i = 0; i < Objects3.size(); i++){
+        if(Objects3[i].nowCount > Objects3[i].frightCount){
+            Objects3.erase(Objects3.begin()+i);
+        }
+        if(Objects3[i].position.x < judgeLine+1){
+            Objects3.erase(Objects3.begin()+i);
+        }
+        Objects3[i].update();
+    }
+
+    for (int i = 0; i < Objects4.size(); i++){
+        if(Objects4[i].nowCount > Objects4[i].frightCount){
+            Objects4.erase(Objects4.begin()+i);
+        }
+        if(Objects4[i].position.x < judgeLine+1){
+            Objects4.erase(Objects4.begin()+i);
+        }
+        Objects4[i].update();
     }
     
     for (int i = 0; i < longObjects.size(); i++){
@@ -165,8 +205,9 @@ void ofApp::update(){
         if(bigObjects[i].nowCount > bigObjects[i].frightCount){
             bigObjects.erase(bigObjects.begin()+i);
         }
-        if(bigObjects[i].position.x < -bigObjects[i].radius){
+        if(bigObjects[i].position.x < judgeLine+1){
             bigObjects.erase(bigObjects.begin()+i);
+            //score -= 100;
         }
         bigObjects[i].update();
     }
@@ -257,26 +298,71 @@ void ofApp::draw3d(){
             buf_y = ObjHumans[i].position.y;
             buf_y = ((buf_y - 2048)*scaley)>>5; //32等倍
             buf_z = (ObjHumans[i].positionz * scalez) >>5;//32等倍
-            buf_speed = (int)(ObjHumans[i].speed*humanscale/10+humansizeoffset);
+            buf_speed = (int)(ObjHumans[i].speed*humanscale/50+humansizeoffset);
             if(ObjHumans[i].humanStd <= ObjHumans[i].objMissThr){
+
                 if(ObjHumans[i].humanStd>=0){
                     addPoint(buf_x, buf_y, buf_z,buf_speed);
                 }
+                addPoint(buf_x, buf_y, buf_z,buf_speed);
+                boxScale.push_back(buf_speed);
             }else{
                 addPoint2(buf_x, buf_y, buf_z,buf_speed);
+                boxScale2.push_back(buf_speed);
             }
         }
+        
+//        camera.begin();
+//        
+//        for(int i=0;i<points.size();i++){
+//            ofSetColor(132, 193, 255);
+//            ofPushMatrix();
+//            ofTranslate(points[i]);
+//            ofDrawBox(boxScale[i]);
+//            ofPopMatrix();
+//        }
+//        
+//        
+//        for(int i=0;i<points2.size();i++){
+//            ofSetColor(255, 198, 142);
+//            ofPushMatrix();
+//            ofTranslate(points2[i]);
+//            ofDrawBox(boxScale2[i]);
+//            ofPopMatrix();
+//        }
+//        camera.end();
+        
     }
+    
+
+    glDepthMask(GL_FALSE);
+    
+    // this makes everything look glowy :)
+    ofEnablePointSprites();
+    
     shader.begin();
     camera.begin();
     texture.bind();
+    //ofSetColor(132, 193, 255);
     ofSetColor(0, 100, 255);
+    //ofSetColor(color1);
     int total = (int)points.size();
     vbo.setVertexData(&points[0], total, GL_STATIC_DRAW);
     vbo.setNormalData(&sizes[0], total, GL_STATIC_DRAW);
     vbo.draw(GL_POINTS, 0, (int)points.size());
     
+    camera.end();
+    shader.end();
+
+    shader.begin();
+    camera.begin();
+    
+    // bind the texture so that when all the points
+    // are drawn they are replace with our dot image
+    texture.bind();
+    //ofSetColor(255, 198, 142);
     ofSetColor(255, 100, 90);
+    //ofSetColor(color2);
     total = (int)points2.size();
     vbo.setVertexData(&points2[0], total, GL_STATIC_DRAW);
     vbo.setNormalData(&sizes2[0], total, GL_STATIC_DRAW);
@@ -327,7 +413,7 @@ void ofApp::draw3d(){
     ofDisablePointSprites();
     ofDisableBlendMode();
     
-    //ofEnableAlphaBlending();
+    ofEnableAlphaBlending();
     
     camera2.begin();
     ofSetLineWidth(1);
@@ -347,10 +433,13 @@ void ofApp::draw(){
     ofBackground(200,200,170);
     //ofBackground(30);
     
+   //ofBackgroundGradient(ofColor(255), ofColor(214, 240, 214));
+    //ofBackgroundGradient(ofColor(255), ofColor(127, 127, 255));
+    
     ofSetColor(255);
     
-    if(!bBlack){
-        if(bHideImage) img.draw(0,0);
+    if(bBlack){
+        if(!bHideImage) img.draw(0,0,ofGetWidth(),ofGetHeight());
         else grabber.draw(0, 0, ofGetWidth(), ofGetHeight());
     }
     
@@ -361,15 +450,14 @@ void ofApp::draw(){
     draw3d();
     //ここまで3D CG
 
-    ofSetColor(255);
+    ofSetColor(color3);
     
     if(timelineMethod<=1){
-//    ofSetLineWidth(1);
+    ofSetLineWidth(2);
     //ofLine(0, 40, ofGetWidth(), 40);
     ofLine(0, 120, ofGetWidth(), 120);
     //ofLine(0, 200, ofGetWidth(), 200);
     //ofLine(0, 250, ofGetWidth(), 250);
-    //ofSetLineWidth(4);
     ofLine(judgeLine, 0, judgeLine, 240);
     ofNoFill();
     ofCircle(judgeLine, 120, 35);
@@ -409,9 +497,18 @@ void ofApp::draw(){
     }
 
     
-    //ofSetColor(0, 0, 255);
-    for (int i = 0; i < Objects.size(); i++) {
-        Objects[i].draw();
+    ofSetColor(255);
+    for (int i = 0; i < Objects1.size(); i++) {
+        Objects1[i].draw1();
+    }
+    for (int i = 0; i < Objects2.size(); i++) {
+        Objects2[i].draw2();
+    }
+    for (int i = 0; i < Objects3.size(); i++) {
+        Objects3[i].draw3();
+    }
+    for (int i = 0; i < Objects4.size(); i++) {
+        Objects4[i].draw4();
     }
     
     //ofSetColor(0, 255, 0);
@@ -446,13 +543,14 @@ void ofApp::draw(){
     }
     
     //シンクロ率表示
-    ofSetColor(255);
+    ofSetColor(color3);
     if(sizes.size() || sizes2.size()){
         syncScore = ((int)(sizes.size()*100/(sizes.size()+sizes2.size())) + syncScore*3)/4;
         if(syncScore > 98){
             syncScore = 100;
         }
-        font.drawString(ofToString(syncScore),100,100);
+        font.drawString(ofToString(syncScore),70,100);
+        font2.drawString("%",185,100);
     }
     
     if(!bHideGui) gui.draw();
@@ -469,21 +567,22 @@ void ofApp::draw(){
     info += "\nelapsed time: "+ofToString(ofGetElapsedTimeMillis());
 //    info += "\ntimer: "+ofToString(timer)+" ms";
     info += "\nobjVel: "+ofToString(objVelocity);
-    ofSetColor(255);
-    ofDrawBitmapString(info, 20, ofGetHeight()-100);
+    ofSetColor(0);
+    if(!bHideInfo) ofDrawBitmapString(info, 20, ofGetHeight()-100);
 
 }
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
     if(key == 'b') bBlack = !bBlack;
-    if(key == 'h') bHideImage = !bHideImage;
+    else if(key == 'h') bHideImage = !bHideImage;
     else if(key == 'g') bHideGui = !bHideGui;
+    else if(key == 'i') bHideInfo = !bHideInfo;
     else if(key == 'z'){
         Obj o;
         o.setDrawMethod(timelineMethod);
-        o.setup(ofVec2f(ofGetWidth(),40), objVelocity);
-        Objects.push_back(o);
+        o.setup4(ofVec2f(ofGetWidth(),40), objVelocity);
+        Objects4.push_back(o);
     }
     else if(key == 'x'){
         Obj o;
@@ -493,8 +592,8 @@ void ofApp::keyPressed(int key){
     else if(key == 'c'){
         Obj o;
         o.setDrawMethod(timelineMethod);
-        o.setup(ofVec2f(ofGetWidth(),200), objVelocity);
-        bigObjects.push_back(o);
+        o.setup1(ofVec2f(ofGetWidth(),200), objVelocity);
+        Objects1.push_back(o);
     }
 
     else if(key == 'p'){
@@ -543,7 +642,7 @@ void ofApp::keyPressed(int key){
                 score += 300;
             }
         }
-    }else if(key == 's') {
+    }else if(key == 'q') {
         gui.saveToFile("settings.xml");
     }
     else if(key == 'l') {
@@ -588,12 +687,12 @@ void ofApp::mouseDragged(int x, int y, int button){
 
 //--------------------------------------------------------------
 void ofApp::mousePressed(int x, int y, int button){
-    for (int i = 0; i < Objects.size(); i++){
-        if(Objects[i].position.x > judgeLine-25 && Objects[i].position.x < judgeLine+25){
-            Objects.erase(Objects.begin()+i);
-            score += 100;
-        }
-    }
+//    for (int i = 0; i < Objects.size(); i++){
+//        if(Objects[i].position.x > judgeLine-25 && Objects[i].position.x < judgeLine+25){
+//            Objects.erase(Objects.begin()+i);
+//            score += 100;
+//        }
+//    }
     
     for (int i = 0; i < longObjects.size(); i++){
 //        if( longObjects[i].position.x < judgeLine && longObjects[i].position.x + longObjects[i].length > judgeLine){
@@ -662,13 +761,12 @@ void ofApp::getMessage4(ofxOscMessage m){
         //平均動きからのズレ
         int mouseStd;
         mouseStd = m.getArgAsInt32(4+j*5);
+        cout << ofToString(mouseStd) << endl;
         ObjHuman o;
         o.setup(mouseX,mouseY,mouseZ,mouseSpeed,0,mouseStd,missThr);
         ObjHumans.push_back(o);
     }
 }
-
-
 
 //--------------------------------------------------------------
 void ofApp::getMessage22(ofxOscMessage m){
