@@ -29,3 +29,22 @@ public:
     float length;
     int objMissThr;
 };
+
+
+//道オブジェクト
+class ObjRoad{
+public:
+    ObjRoad();
+    ofVec4f getLeftPos(int idx);//(leftx,lefty,leftz,alpha)
+    int getIdxStart();
+    int getIdxEnd();
+    int getRoadWidth(int idx);//x軸方向の広がり
+    void update();
+    
+    int offsetZ;
+    int count;//
+    float speed;
+    int width;//描画短冊の幅
+    int Ythr1;//消え始めるY閾値
+    int Ythr2;//完全に消えるY閾値
+};

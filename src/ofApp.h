@@ -86,11 +86,33 @@ class ofApp : public ofBaseApp{
     vector <ofVec3f> sizes;
     vector <ofVec3f> points2;//間違ってるやつ
     vector <ofVec3f> sizes2;
+        
+    //3D Object
+    ObjRoad objRoad;
     
     ofVbo vbo;
     ofShader shader;
-    ofEasyCam camera;
+    ofShader shader2;
+    
+    //ofEasyCam camera;
+    ofCamera camera;
+    ofCamera camera2;
+    
     float camDist;
     ofTexture texture;
     
+    //カメラパラメータ
+    int cameraCount;
+    int cameraId;
+    
+    
+    //虹色
+    int rainbow[7][3] = {{0xFF,0x00,0x00},
+        {0xFF,0x80,0x00},
+        {0xFF,0xFF,0x00},
+        {0x00,0x99,0x00},
+        {0x00,0x00,0xFF},
+        {0x00,0x00,0xCC},
+        {0x66,0x00,0xCC}};
+    //
 };

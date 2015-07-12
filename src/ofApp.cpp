@@ -5,6 +5,7 @@ void ofApp::setup(){
     //ofBackground(0);
     //ofSetVerticalSync(true);
     //ofEnableSmoothing();
+    ofSetFrameRate(30);
     grabber.initGrabber(640, 360);
     ofSetCircleResolution(64);
     
@@ -50,12 +51,15 @@ void ofApp::setup(){
     //ここから3D CG
     bDraw3d = true;
 
-    ofDisableArbTex();
+    ofDisableArbTex();//画像サイズが２のべき乗でないといけないのを無効化
     ofLoadImage(texture, "dot.png");
+    
+    //3D Object
+    cameraId = 1;
     
     // set the camera distance
     camDist  = 1605;
-    camera.setDistance(camDist);
+    //camera.setDistance(camDist);
     
     // randomly add a point on a sphere
     int   num = 500;
@@ -81,6 +85,14 @@ void ofApp::setup(){
     vbo.setNormalData(&sizes[0], total, GL_STATIC_DRAW);
     
     // load the shader
+    
+    
+    //道路
+    shader2.setGeometryInputType(GL_LINES);
+    shader2.setGeometryOutputType(GL_TRIANGLE_STRIP);
+    shader2.setGeometryOutputCount(4);
+    
+    
 #ifdef TARGET_OPENGLES
     shader.load("shaders_gles/shader");
 #else
@@ -165,8 +177,8 @@ void ofApp::update(){
         }
         ObjHumans[i].update();
     }
+    objRoad.update();
 }
-
 
 //--------------------------------------------------------------
 void ofApp::addPoint(float x, float y, float z,float size) {
@@ -192,94 +204,148 @@ void ofApp::draw3d(){
     points2.clear();
     sizes2.clear();
 
+    
+    //カメラ設定
+    int cx,cy;
+    cameraCount++;
+    ofVec3f cameraMoving;
+    cameraMoving = ofVec3f(0,objRoad.count*objRoad.speed,0);
+    camera2.setPosition(camera.getPosition()+cameraMoving);
+    camera2.lookAt(cameraMoving,ofVec3f(0,0,1));
+    
+    switch (cameraId) {
+        case 1:
+            camera.setPosition(0, -2000, 400);
+            camera.lookAt(ofVec3f(0,0,0),ofVec3f(0,0,1));
+            break;
+        case 2:
+            //camera.setPosition(800, -800, 300);
+            camera.setPosition(1500, -3000, 800);
+            camera.lookAt(ofVec3f(0,0,0),ofVec3f(0,0,1));
+            break;
+        case 3:
+            camera.setPosition(0, 1500, 500);
+            camera.lookAt(ofVec3f(0,0,0),ofVec3f(0,0,1));
+            break;
+        case 4:
+            cx = 1200*cos( cameraCount/300.0 );
+            cy = 1200*sin( cameraCount/300.0 );
+            camera.setPosition(cx, cy, 400);
+            camera.lookAt(ofVec3f(0,0,0),ofVec3f(0,0,1));
+            break;
+        case 5:
+            cx = 1200*cos( cameraCount/300.0 )*(cos(cameraCount/300.0)+2)/3;
+            cy = 1200*sin( cameraCount/300.0 )*(cos(cameraCount/300.0)+2)/3;
+            camera.setPosition(cx, cy, 400*(cos(cameraCount/300.0)+2)/3);
+            camera.lookAt(ofVec3f(0,0,0),ofVec3f(0,0,1));
+            break;
+        default:
+            break;
+    }
+    
+    glDepthMask(GL_FALSE);//デプスバッファに書き込むのを禁止する
+    
+    ofEnableBlendMode(OF_BLENDMODE_ADD);//加算描画 this makes everything look glowy
+    ofEnablePointSprites();
+    
+    //観客描画
     if(bDraw3d){
         int buf_x,buf_y,buf_z,buf_speed;
         for (int i = 0; i < ObjHumans.size(); i++) {
             buf_x = ObjHumans[i].position.x;
             buf_x = ((buf_x - 512)*scalex)>>5; //32等倍
             buf_y = ObjHumans[i].position.y;
-            buf_y = ((buf_y - 512)*scaley)>>5; //32等倍
+            buf_y = ((buf_y - 2048)*scaley)>>5; //32等倍
             buf_z = (ObjHumans[i].positionz * scalez) >>5;//32等倍
             buf_speed = (int)(ObjHumans[i].speed*humanscale/10+humansizeoffset);
             if(ObjHumans[i].humanStd <= ObjHumans[i].objMissThr){
-                addPoint(buf_x, buf_y, buf_z,buf_speed);
+                if(ObjHumans[i].humanStd>=0){
+                    addPoint(buf_x, buf_y, buf_z,buf_speed);
+                }
             }else{
                 addPoint2(buf_x, buf_y, buf_z,buf_speed);
             }
         }
     }
-    
-
-
-    glDepthMask(GL_FALSE);
-    
-    // this makes everything look glowy :)
-    ofEnableBlendMode(OF_BLENDMODE_ADD);
-    ofEnablePointSprites();
-    
-    // bind the shader and camera
-    // everything inside this function
-    // will be effected by the shader/camera
     shader.begin();
     camera.begin();
-    
-    // bind the texture so that when all the points
-    // are drawn they are replace with our dot image
     texture.bind();
     ofSetColor(0, 100, 255);
     int total = (int)points.size();
     vbo.setVertexData(&points[0], total, GL_STATIC_DRAW);
     vbo.setNormalData(&sizes[0], total, GL_STATIC_DRAW);
     vbo.draw(GL_POINTS, 0, (int)points.size());
-    texture.unbind();
     
-    camera.end();
-    shader.end();
-
-    shader.begin();
-    camera.begin();
-    
-    // bind the texture so that when all the points
-    // are drawn they are replace with our dot image
-    texture.bind();
     ofSetColor(255, 100, 90);
     total = (int)points2.size();
     vbo.setVertexData(&points2[0], total, GL_STATIC_DRAW);
     vbo.setNormalData(&sizes2[0], total, GL_STATIC_DRAW);
     vbo.draw(GL_POINTS, 0, (int)points2.size());
     texture.unbind();
-    
     camera.end();
     shader.end();
     
+    ofDisableBlendMode();
+    //ライブハウスグリッド描画
+    
+    
+    
+    //道路表示
+    shader2.begin();
+    camera2.begin();
+    ofVec4f bufpos,bufpos_1f;
+    for(int i=objRoad.getIdxStart();i<objRoad.getIdxEnd();i++){
+        bufpos = objRoad.getLeftPos(i);
+        //ofSetColor(255, 255,255,bufpos.w);
+        ofSetColor(255, 255-i*10,255-i*10);
+        int roadwidth = objRoad.getRoadWidth(i);
+        if(i==objRoad.getIdxStart()){
+            continue;
+        }
+        ofSetColor(rainbow[(i/10)%7][0],rainbow[(i/10)%7][1],rainbow[(i/10)%7][2],bufpos.w);
+        ofSetColor(0,200,0,bufpos.w);
+        ofBoxPrimitive buf_box;
+        buf_box = ofBoxPrimitive(roadwidth, objRoad.width, 1);
+        buf_box.setPosition(bufpos_1f.x, bufpos_1f.y+objRoad.width/2, bufpos.z);
+        buf_box.draw();
+        if(i%20==0){
+            ofSetColor(255,0,0,255);
+            ofSpherePrimitive a;
+            a = ofSpherePrimitive(10, 20);
+            a.setPosition(bufpos_1f.x, bufpos_1f.y, 0);
+            a.draw();
+            ofBoxPrimitive b;
+            b = ofBoxPrimitive(roadwidth, 3, 20);
+            b.setPosition(bufpos_1f.x, bufpos_1f.y, bufpos.z);
+            b.draw();
+        }
+        bufpos_1f = bufpos;
+    }
+    camera2.end();
+    shader2.end();
 
-    
-    
     ofDisablePointSprites();
     ofDisableBlendMode();
     
-    // check to see if the points are
-    // sizing to the right size
-    ofEnableAlphaBlending();
+    //ofEnableAlphaBlending();
     
-    camera.begin();
+    camera2.begin();
     ofSetLineWidth(1);
-    
-    /*for (unsigned int i=0; i<points.size(); i++) {
-        ofSetColor(255, 80);
-        ofVec3f mid = points[i];
-        mid.normalize();
-        mid *= 300;
-        ofLine(points[i], mid);
-    }*/
-    camera.end();
+    ofSetColor(255,0,0);
+    ofLine(ofVec3f(0,0,0), ofVec3f(300,0,0));
+    ofSetColor(0,255,0);
+    ofLine(ofVec3f(0,0,0), ofVec3f(0,300,0));
+    ofSetColor(0,0,255);
+    ofLine(ofVec3f(0,0,0), ofVec3f(0,0,300));
+    camera2.end();
     
     glDepthMask(GL_TRUE);
 }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-    ofBackground(0);
+    ofBackground(200,200,170);
+    //ofBackground(30);
     
     ofSetColor(255);
     
@@ -488,6 +554,21 @@ void ofApp::keyPressed(int key){
         bDraw3d = !bDraw3d;
     }else if(key == '4') {
         points.clear();
+    }else if(key == '5') {
+        cameraCount = 0;
+        cameraId = 1;
+    }else if(key == '6') {
+        cameraCount = 0;
+        cameraId = 2;
+    }else if(key == '7') {
+        cameraCount = 0;
+        cameraId = 3;
+    }else if(key == '8') {
+        cameraCount = 0;
+        cameraId = 4;
+    }else if(key == '9') {
+        cameraCount = 0;
+        cameraId = 5;
     }
 }
 
