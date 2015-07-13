@@ -1,6 +1,6 @@
 <panel>
 	<length>400</length>
-	<missThr>183</missThr>
+	<missThr>30</missThr>
 	<3d_scale_x>30</3d_scale_x>
 	<3d_scale_y>30</3d_scale_y>
 	<3d_scale_z>30</3d_scale_z>

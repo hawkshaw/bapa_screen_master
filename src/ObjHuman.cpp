@@ -10,8 +10,8 @@
 
 ObjRoad::ObjRoad(){
     offsetZ = -20;
-    Ythr1 = 400;
-    Ythr2 = 1200;
+    Ythr1 = 200;
+    Ythr2 = 1000;
     width = 20;
     speed = 30.0;
     count = 0;
@@ -57,10 +57,18 @@ ObjFrame::ObjFrame(){
 }
 
 void ObjFrame::setup(int _scalex,int _scaley,int _scalez,int _xoffset,int _yoffset){
+    int stagew = 800;
+    int stageh = 30;
+    int staged = 200;
     int bufxl = ((-512 - _xoffset)*_scalex)>>5; //32等倍
     int bufxr = ((512 - _xoffset)*_scalex)>>5; //32等倍
-    int bufyt = ((-512 - _yoffset)*_scaley)>>5; //32等倍
-    int bufyb = ((512 - _yoffset)*_scaley)>>5; //32等倍
+    int bufyb = ((-512 - _yoffset)*_scaley)>>5; //32等倍
+    int bufyt = ((512 + staged - _yoffset)*_scaley)>>5; //32等倍
+    int bufxstagel = ((-(stagew/2) - _xoffset)*_scalex)>>5; //32等倍
+    int bufxstager = (( (stagew/2) - _xoffset)*_scalex)>>5; //32等倍
+    int bufystageb = ((512 - _yoffset)*_scaley)>>5; //32等倍
+    int bufystaget = bufyt;
+    int h = 300;//会場高さ
     posFrom.clear();
     posTo.clear();
     posFrom.push_back(ofVec3f(bufxl,bufyt,0));
@@ -71,7 +79,7 @@ void ObjFrame::setup(int _scalex,int _scaley,int _scalez,int _xoffset,int _yoffs
     posTo.push_back(ofVec3f(bufxl,bufyb,0));
     posFrom.push_back(ofVec3f(bufxr,bufyt,0));
     posTo.push_back(ofVec3f(bufxr,bufyb,0));
-    int h = 100;
+
     posFrom.push_back(ofVec3f(bufxl,bufyt,h));
     posTo.push_back(ofVec3f(bufxr,bufyt,h));
     posFrom.push_back(ofVec3f(bufxl,bufyb,h));
@@ -89,6 +97,35 @@ void ObjFrame::setup(int _scalex,int _scaley,int _scalez,int _xoffset,int _yoffs
     posTo.push_back(ofVec3f(bufxr,bufyt,h));
     posFrom.push_back(ofVec3f(bufxr,bufyb,0));
     posTo.push_back(ofVec3f(bufxr,bufyb,h));
+
+    //stage
+    posFrom.push_back(ofVec3f(bufxstagel,bufystaget,0));
+    posTo.push_back(ofVec3f(bufxstager,bufystaget,0));
+    posFrom.push_back(ofVec3f(bufxstagel,bufystageb,0));
+    posTo.push_back(ofVec3f(bufxstager,bufystageb,0));
+    posFrom.push_back(ofVec3f(bufxstagel,bufystaget,0));
+    posTo.push_back(ofVec3f(bufxstagel,bufystageb,0));
+    posFrom.push_back(ofVec3f(bufxstager,bufystaget,0));
+    posTo.push_back(ofVec3f(bufxstager,bufystageb,0));
+    
+    posFrom.push_back(ofVec3f(bufxstagel,bufystaget,stageh));
+    posTo.push_back(ofVec3f(bufxstager,bufystaget,stageh));
+    posFrom.push_back(ofVec3f(bufxstagel,bufystageb,stageh));
+    posTo.push_back(ofVec3f(bufxstager,bufystageb,stageh));
+    posFrom.push_back(ofVec3f(bufxstagel,bufystaget,stageh));
+    posTo.push_back(ofVec3f(bufxstagel,bufystageb,stageh));
+    posFrom.push_back(ofVec3f(bufxstager,bufystaget,stageh));
+    posTo.push_back(ofVec3f(bufxstager,bufystageb,stageh));
+    
+    posFrom.push_back(ofVec3f(bufxstagel,bufystaget,0));
+    posTo.push_back(ofVec3f(bufxstagel,bufystaget,stageh));
+    posFrom.push_back(ofVec3f(bufxstagel,bufystageb,0));
+    posTo.push_back(ofVec3f(bufxstagel,bufystageb,stageh));
+    posFrom.push_back(ofVec3f(bufxstager,bufystaget,0));
+    posTo.push_back(ofVec3f(bufxstager,bufystaget,stageh));
+    posFrom.push_back(ofVec3f(bufxstager,bufystageb,0));
+    posTo.push_back(ofVec3f(bufxstager,bufystageb,stageh));
+
 }
 
 void ObjFrame::draw(){

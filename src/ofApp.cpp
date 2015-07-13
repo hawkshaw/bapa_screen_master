@@ -263,12 +263,12 @@ void ofApp::draw3d(){
     
     switch (cameraId) {
         case 1:
-            camera.setPosition(0, -2000, 400);
+            camera.setPosition(0, -1000, 400);
             camera.lookAt(ofVec3f(0,0,0),ofVec3f(0,0,1));
             break;
         case 2:
-            //camera.setPosition(800, -800, 300);
-            camera.setPosition(1500, -3000, 800);
+            camera.setPosition(800, -800, 300);
+            //camera.setPosition(1500, -3000, 800);
             camera.lookAt(ofVec3f(0,0,0),ofVec3f(0,0,1));
             break;
         case 3:
@@ -276,15 +276,15 @@ void ofApp::draw3d(){
             camera.lookAt(ofVec3f(0,0,0),ofVec3f(0,0,1));
             break;
         case 4:
-            cx = 1200*cos( cameraCount/300.0 );
-            cy = 1200*sin( cameraCount/300.0 );
+            cx = 1200*cos( cameraCount/200.0 );
+            cy = 1200*sin( cameraCount/200.0 );
             camera.setPosition(cx, cy, 400);
             camera.lookAt(ofVec3f(0,0,0),ofVec3f(0,0,1));
             break;
         case 5:
-            cx = 1200*cos( cameraCount/300.0 )*(cos(cameraCount/300.0)+2)/3;
-            cy = 1200*sin( cameraCount/300.0 )*(cos(cameraCount/300.0)+2)/3;
-            camera.setPosition(cx, cy, 400*(cos(cameraCount/300.0)+2)/3);
+            cx = -1200*cos( cameraCount/100.0 )*(cos(cameraCount/100.0)+2)/3;
+            cy = 1200*sin( cameraCount/100.0 )*(cos(cameraCount/100.0)+2)/3;
+            camera.setPosition(cx, cy, 400*(cos(cameraCount/100.0)+2)/3);
             camera.lookAt(ofVec3f(0,0,0),ofVec3f(0,0,1));
             break;
         default:
