@@ -120,6 +120,9 @@ class ofApp : public ofBaseApp{
     int cameraCount;
     int cameraId;
     
+    // 鳥居logo
+    ofImage texTorii;
+    ObjSimple objTorii;
     
     //虹色
     int rainbow[7][3] = {{0xFF,0x00,0x00},

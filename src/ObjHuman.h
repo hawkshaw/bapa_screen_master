@@ -62,3 +62,24 @@ public:
     int Ythr2;//完全に消えるY閾値
 
 };
+
+
+class ObjWhiteWall{
+public:
+    ObjWhiteWall();
+    void setup(int y);
+    int width;
+    int height;
+    int offsetZ;
+};
+
+
+class ObjSimple{
+public:
+    ObjSimple();
+    void setup(int _w,int _h,int _x,int _y,int _z);
+    int width;
+    int height;
+    int x,y,z;
+    void draw(ofImage tex);
+};

@@ -69,6 +69,9 @@ void ofApp::setup(){
     cameraId = 1;
     objFrame.setup(scalex, scaley, scalez, objFrameOffsetx, objFrameOffsety);
     
+    texTorii.loadImage("鳥居.png");
+    objTorii.setup(600, 600, 0, 700, 0);
+    
     // set the camera distance
     camDist  = 1605;
     //camera.setDistance(camDist);
@@ -414,7 +417,7 @@ void ofApp::draw3d(){
     
     //ライブハウスグリッド描画
     objFrame.draw();
-    
+
     camera.end();
     shader.end();
     
@@ -434,6 +437,20 @@ void ofApp::draw3d(){
     ofSetColor(0,0,255);
     ofLine(ofVec3f(0,0,0), ofVec3f(0,0,300));
     camera2.end();
+    
+    
+    
+    /*float boxSize = 100;
+    ofFill();
+    ofSetColor(255);
+    ofDrawBox(boxSize);
+    ofNoFill();*/
+    //ba.drawNormals(1000);
+    //texture3.getTextureReference().unbind();
+    camera.begin();
+    objTorii.draw(texTorii);
+    camera.end();
+    
     
     glDepthMask(GL_TRUE);
 }

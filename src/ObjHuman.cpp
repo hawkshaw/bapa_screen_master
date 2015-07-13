@@ -8,6 +8,36 @@
 
 #include "ObjHuman.h"
 
+
+
+
+ObjSimple::ObjSimple(){
+}
+
+void ObjSimple::setup(int _w, int _h, int _x, int _y, int _z){
+    width=_w;
+    height=_h;
+    x = _x;
+    y = _y;
+    z = _z;
+}
+
+void ObjSimple::draw(ofImage tex){
+    ofPushMatrix();
+    tex.bind();
+    ofSetColor(255);
+    ofPlanePrimitive ba;
+    ba.set(width,height);
+    ofTranslate(x,y,z);
+    ofRotateX(-90);
+    ba.setPosition(0,0,0);
+    ba.setResolution(3,3);
+    ba.draw();
+    tex.unbind();
+    ofPopMatrix();
+}
+
+
 ObjRoad::ObjRoad(){
     offsetZ = -20;
     Ythr1 = 200;
