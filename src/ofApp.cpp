@@ -61,7 +61,9 @@ void ofApp::setup(){
     bDraw3d = true;
 
     ofDisableArbTex();//画像サイズが２のべき乗でないといけないのを無効化
-    ofLoadImage(texture, "dot.png");
+    ofLoadImage(texture, "textures/dot.png");
+    
+    ofLoadImage(texture2, "textures/sensu.png");
     
     //3D Object
     cameraId = 1;
@@ -95,7 +97,8 @@ void ofApp::setup(){
     vbo.setNormalData(&sizes[0], total, GL_STATIC_DRAW);
     
     // load the shader
-    
+
+
     
     //道路
     shader2.setGeometryInputType(GL_LINES);
@@ -298,7 +301,7 @@ void ofApp::draw3d(){
     
     
     //道路表示
-    shader2.begin();
+    //shader2.begin();
     camera2.begin();
     ofVec4f bufpos,bufpos_1f;
     for(int i=objRoad.getIdxStart();i<objRoad.getIdxEnd();i++){
@@ -327,11 +330,14 @@ void ofApp::draw3d(){
         bufpos_1f = bufpos;
     }
     camera2.end();
-    shader2.end();
+    //shader2.end();
+    
+    ofDisablePointSprites();
+    ofDisableBlendMode();
 
     
     //観客描画
-    ofEnableBlendMode(OF_BLENDMODE_ADD);//加算描画 this makes everything look glowy
+    //ofEnableBlendMode(OF_BLENDMODE_ADD);//加算描画 this makes everything look glowy
     if(bDraw3d){
         int buf_x,buf_y,buf_z,buf_speed;
         for (int i = 0; i < ObjHumans.size(); i++) {
@@ -344,12 +350,12 @@ void ofApp::draw3d(){
             if(ObjHumans[i].humanStd <= ObjHumans[i].objMissThr){
 
                 if(ObjHumans[i].humanStd>=0){
-                    addPoint(buf_x, buf_y, buf_z,buf_speed);
+                    addPoint(buf_x, buf_y, buf_z,buf_speed*2);
                 }
-                addPoint(buf_x, buf_y, buf_z,buf_speed);
+                addPoint(buf_x, buf_y, buf_z,buf_speed*2);
                 boxScale.push_back(buf_speed);
             }else{
-                addPoint2(buf_x, buf_y, buf_z,buf_speed);
+                addPoint2(buf_x, buf_y, buf_z,buf_speed*2);
                 boxScale2.push_back(buf_speed);
             }
         }
@@ -383,24 +389,28 @@ void ofApp::draw3d(){
     
     // this makes everything look glowy :)
     ofEnablePointSprites();
+    ofEnableAlphaBlending();
     
     shader.begin();
     camera.begin();
-    texture.bind();
-    ofSetColor(0, 100, 255);
+    //texture.bind();
+    texture2.bind();
+    ofSetColor(255);
+    //ofSetColor(0, 100, 255);
     int total = (int)points.size();
     vbo.setVertexData(&points[0], total, GL_STATIC_DRAW);
     vbo.setNormalData(&sizes[0], total, GL_STATIC_DRAW);
     vbo.draw(GL_POINTS, 0, (int)points.size());
     
-    ofSetColor(255, 100, 90);
+    //ofSetColor(255, 100, 90);
     total = (int)points2.size();
     vbo.setVertexData(&points2[0], total, GL_STATIC_DRAW);
     vbo.setNormalData(&sizes2[0], total, GL_STATIC_DRAW);
-    vbo.draw(GL_POINTS, 0, (int)points2.size());
-    texture.unbind();
+    vbo.draw(GL_POINTS, 0,(int)points2.size());
+    //texture.unbind();
+    texture2.unbind();
 
-    ofDisableBlendMode();
+    //ofDisableBlendMode();
     
     //ライブハウスグリッド描画
     objFrame.draw();
@@ -412,8 +422,7 @@ void ofApp::draw3d(){
     
 
     ofDisablePointSprites();
-    ofDisableBlendMode();
-    
+    //ofDisableBlendMode();
     ofEnableAlphaBlending();
     
     camera2.begin();
@@ -695,11 +704,11 @@ void ofApp::mousePressed(int x, int y, int button){
 //        }
 //    }
     
-    for (int i = 0; i < longObjects.size(); i++){
+//    for (int i = 0; i < longObjects.size(); i++){
 //        if( longObjects[i].position.x < judgeLine && longObjects[i].position.x + longObjects[i].length > judgeLine){
 //            
 //        }
-    }
+//    }
     
     startTime = ofGetElapsedTimeMillis();
 }
@@ -762,7 +771,7 @@ void ofApp::getMessage4(ofxOscMessage m){
         //平均動きからのズレ
         int mouseStd;
         mouseStd = m.getArgAsInt32(4+j*5);
-        cout << ofToString(mouseStd) << endl;
+        //cout << ofToString(mouseStd) << endl;
         ObjHuman o;
         o.setup(mouseX,mouseY,mouseZ,mouseSpeed,0,mouseStd,missThr);
         ObjHumans.push_back(o);

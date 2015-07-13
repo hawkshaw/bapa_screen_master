@@ -114,6 +114,7 @@ class ofApp : public ofBaseApp{
     
     float camDist;
     ofTexture texture;
+    ofTexture texture2;
     
     //カメラパラメータ
     int cameraCount;
