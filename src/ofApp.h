@@ -12,6 +12,9 @@
 #include "ofVbo.h"
 #define NUM_BILLBOARDS 500  //松
 
+#define TEXLIBLINE 4
+#define TEXLIBNUM 10
+
 class ofApp : public ofBaseApp{
     private:
         ofTrueTypeFont font;
@@ -122,6 +125,7 @@ class ofApp : public ofBaseApp{
     
     //カメラパラメータ
     int cameraCount;
+    ofVec3f cameraMoving;//移動するカメラ原点
     int cameraId;
     
     // 鳥居logo
@@ -131,6 +135,14 @@ class ofApp : public ofBaseApp{
     // 雲たち
     ofImage texCloud;
     vector<ObjSimple> objClouds;
+    
+    ofImage texSetsumei1;
+    ofImage texSetsumei2;
+    ofImage texSetsumei3;
+    ObjSimple objSetsumei1;
+    ObjSimple objSetsumei2;
+    ObjSimple objSetsumei3;
+    
     
     //虹色
     int rainbow[7][3] = {{0xFF,0x00,0x00},
@@ -142,6 +154,41 @@ class ofApp : public ofBaseApp{
         {0x66,0x00,0xCC}};
     //
     
+    
+    //texture library
+    //コマンドは　qwertyuiop　行は上下で変更
+    char texlib[TEXLIBLINE][TEXLIBNUM][20]={
+        {"1","2","3","4","5","6","7","8","9","10"},
+        {"11","12","13","14","15","16","17","18","19","20"},
+        {"21","22","23","24","matsu","1","2","3","4","5"},
+        {"21","22","23","24","matsu","1","2","3","4","5"}};
+
+    /*"7",			"leftfrontng"
+        10.png			8.png			matsu.png
+        11.png			9.png			midori.png
+        13.png			centerbackgood.png	migi.png
+        14.png			centerbackng.png	nainainai.png
+        15.png			centerfrontgood.png	rightbackgood.png
+        16.png			centerfrontng.png	rightbackng.png
+        17.png			cloud1.png		rightfrontgood.png
+        18.png			cloud2.png		rightfrontng.png
+        19.png			dodongadon.png		sabihaikei.png
+        2.png			dokkyun.png		sensu.png
+        20.png			dot.png			tebyousi.png
+        21.png			haikei.png		torii.png
+        22.png			hidari.png		yoiyoiyoiyoi.png
+        23.png			kawaii.png		yoiyoiyoiyoihaikei.png
+        24.png			ketyahaikei.png		zokkon.png
+        3.png			lasthaikei.png		zukkyun.png
+        4.png			leftbackgood.png	zukkyun2.png
+        5.png			leftbackng.png
+        6.png			leftfrontgood.png*/
+    
+    vector<ObjSimple> objLibs;
+    vector<ofImage> texLibs;//texlibの指定したファイルを一列にして保存 i*TEXLIBNUM+jでアクセス
+    int texlibnum = 0;
+    int texid;//
+    int texflag;//ボタンが押されると立つ
     
     // billboard particles（松）
     float billboardSizeTarget[NUM_BILLBOARDS];

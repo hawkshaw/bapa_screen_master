@@ -23,6 +23,10 @@ void ObjSimple::setup(int _w, int _h, int _x, int _y, int _z){
     visibleyrange = 4000;
 }
 
+void ObjSimple::settex(int _i, int _j){
+    texidi = _i;
+    texidj = _j;
+}
 
 bool ObjSimple::visible(float ypos){//ypos：カメラY座標
     if(ypos < (y-visibleyrange)){
@@ -31,6 +35,14 @@ bool ObjSimple::visible(float ypos){//ypos：カメラY座標
         return false;
     }else{
         return true;
+    }
+}
+
+bool ObjSimple::killmyself(float ypos){
+    if((y+visibleyrange) < ypos){
+        return true;
+    }else{
+        return false;
     }
 }
 
@@ -48,7 +60,6 @@ void ObjSimple::draw(ofImage tex){
     tex.unbind();
     ofPopMatrix();
 }
-
 
 ObjRoad::ObjRoad(){
     offsetZ = -20;

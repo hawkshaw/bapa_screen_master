@@ -53,6 +53,7 @@ void ofApp::setup(){
     
     font.loadFont("Avenir.ttc", 72);
     font2.loadFont("Avenir.ttc", 36);
+    //VALkana/valkana_standard.otf
     
     //2D関連
     bDraw2d = false;
@@ -73,37 +74,25 @@ void ofApp::setup(){
     objTorii.setup(600, 600, 0, 800, 300);
 
     
-    texCloud.loadImage("cloud1.png");
+    texCloud.loadImage("textures/cloud1.png");
     for (int i = 0;i<100;i++){
         ObjSimple objbuf;
         objbuf.setup(1000, 1000, 0, i*2000, 0);
         objClouds.push_back(objbuf);
     }
     
-    
-    
-    // set the camera distance
-    //camDist  = 1605;
-    //camera.setDistance(camDist);
-    
-//    // randomly add a point on a sphere
-//    int   num = 500;
-//    float radius = 1000;
-//    for(int i = 0; i<num; i++ ) {
-//        
-//        float theta1 = ofRandom(0, TWO_PI);
-//        float theta2 = ofRandom(0, TWO_PI);
-//        
-//        ofVec3f p;
-//        p.x = cos( theta1 ) * cos( theta2 );
-//        p.y = sin( theta1 );
-//        p.z = cos( theta1 ) * sin( theta2 );
-//        p *= radius;
-//        
-//        addPoint(p.x, p.y, p.z,10);
-//        
-//    }
-    
+    for (int i = 0;i<TEXLIBLINE;i++){
+        for(int j = 0;j<TEXLIBNUM;j++){
+            ofImage bufimage;
+            char bufchar[40] = "";
+            strcat(bufchar,"textures/");
+            strcat(bufchar,texlib[i][j]);
+            strcat(bufchar,".png");
+            bufimage.loadImage(bufchar);
+            texLibs.push_back(bufimage);
+        }
+    }
+
     // upload the data to the vbo
     int total = (int)points.size();
     vbo.setVertexData(&points[0], total, GL_STATIC_DRAW);
@@ -275,7 +264,16 @@ void ofApp::update(){
     for (int i=0; i<NUM_BILLBOARDS; i++) {
         billboards.setNormal(i,ofVec3f(12 + billboardSizeTarget[i],0,0));
     }
-
+    
+    
+    //テクスチャライブラリ
+    if(texflag){
+        ObjSimple objbuf;
+        objbuf.settex(texlibnum,texid);
+        objbuf.setup(100, 100, ofRandom(-500,500), cameraMoving.y+800, ofRandom(-100,400));
+        objLibs.push_back(objbuf);
+        texflag = 0;
+    }
 }
 
 //--------------------------------------------------------------
@@ -308,7 +306,6 @@ void ofApp::draw3d(){
     //カメラ設定
     int cx,cy;
     cameraCount++;
-    ofVec3f cameraMoving;
     cameraMoving = ofVec3f(0,objRoad.count*objRoad.speed,0);
     camera2.setPosition(camera.getPosition()+cameraMoving);
     camera2.lookAt(cameraMoving,ofVec3f(0,0,1));
@@ -409,27 +406,6 @@ void ofApp::draw3d(){
                 boxScale2.push_back(buf_speed);
             }
         }
-        
-//        camera.begin();
-//        
-//        for(int i=0;i<points.size();i++){
-//            ofSetColor(132, 193, 255);
-//            ofPushMatrix();
-//            ofTranslate(points[i]);
-//            ofDrawBox(boxScale[i]);
-//            ofPopMatrix();
-//        }
-//        
-//        
-//        for(int i=0;i<points2.size();i++){
-//            ofSetColor(255, 198, 142);
-//            ofPushMatrix();
-//            ofTranslate(points2[i]);
-//            ofDrawBox(boxScale2[i]);
-//            ofPopMatrix();
-//        }
-//        camera.end();
-        
     }
     glDepthMask(GL_FALSE);
 
@@ -498,10 +474,7 @@ void ofApp::draw3d(){
     ofDisableAlphaBlending();
     //ここまで松
     
-    
     camera2.end();
-    
-    
     
     /*float boxSize = 100;
     ofFill();
@@ -519,11 +492,20 @@ void ofApp::draw3d(){
             objClouds[i].draw(texCloud);
         }
     }
-    objTorii.draw(texTorii);
+
+    for(int i =0 ;i< objLibs.size();i++){
+        if(objLibs[i].visible(cameraMoving.y)){
+            objLibs[i].draw(texLibs[objLibs[i].texidi*TEXLIBNUM+objLibs[i].texidj]);
+        }else{
+            if(objLibs[i].killmyself(cameraMoving.y)){
+                objLibs.erase(objLibs.begin()+i);
+            }
+        }
+    }
+    
     ofDisableAlphaBlending();
     camera2.end();
-    
-    
+
     glDepthMask(GL_TRUE);
 }
 
@@ -678,6 +660,7 @@ void ofApp::draw(){
 //    info += "\ntimer: "+ofToString(timer)+" ms";
     info += "\nobjVel: "+ofToString(objVelocity);
     info += "\nParticle Matsu: "+ofToString(NUM_BILLBOARDS);
+    info += "\nTexture LineID: "+ofToString(texlibnum);
     ofSetColor(0);
     if(!bHideInfo) ofDrawBitmapString(info, 20, ofGetHeight()-100);
     
@@ -691,8 +674,10 @@ void ofApp::draw(){
 void ofApp::keyPressed(int key){
     if(key == 'b') bBlack = !bBlack;
     else if(key == 'h') bHideImage = !bHideImage;
-    else if(key == 'g') bHideGui = !bHideGui;
-    else if(key == 'i') bHideInfo = !bHideInfo;
+    else if(key == 'g') {
+        bHideGui = !bHideGui;
+        bHideInfo = !bHideInfo;
+    }
     else if(key == 'z'){
         Obj o;
         o.setDrawMethod(timelineMethod);
@@ -712,7 +697,7 @@ void ofApp::keyPressed(int key){
         Objects3.push_back(o);
     }
 
-    else if(key == 'p'){
+    /*else if(key == 'p'){
         ofxOscMessage m;
         m.setAddress("/duration/play");
         sender.sendMessage(m);
@@ -738,14 +723,18 @@ void ofApp::keyPressed(int key){
         bMusicReset = true;
         objVelocity = 3.9095f;
         score = 0;
-    }
+    }*/
     else if(key == OF_KEY_UP){
-        objVelocity += 0.001f;
+        if(texlibnum<3){
+            texlibnum++;
+        }
     }
     else if(key == OF_KEY_DOWN){
-        objVelocity -= 0.001f;
+        if(texlibnum>0){
+            texlibnum--;
+        }
     }
-    else if(key == OF_KEY_RIGHT){
+    /*else if(key == OF_KEY_RIGHT){
         objVelocity += 0.01f;
     }
     else if(key == OF_KEY_LEFT){
@@ -758,11 +747,13 @@ void ofApp::keyPressed(int key){
                 score += 300;
             }
         }
-    }else if(key == 'q') {
+    }*/
+    else if(key == 's') {
         gui.saveToFile("settings.xml");
     }
     else if(key == 'l') {
         gui.loadFromFile("settings.xml");
+
     }else if(key == '1'){
         bFogSw = true;//白霧を切り替えるスイッチ
     }else if(key == '2'){
@@ -805,6 +796,46 @@ void ofApp::keyPressed(int key){
             billboardSizeTarget[i] = ofRandom(64, 128);
         
         }
+    }
+    else if(key == 'q'){
+        texflag = 1;
+        texid = 1;
+    }
+    else if(key == 'w'){
+        texflag = 1;
+        texid = 2;
+    }
+    else if(key == 'e'){
+        texflag = 1;
+        texid = 3;
+    }
+    else if(key == 'r'){
+        texflag = 1;
+        texid = 4;
+    }
+    else if(key == 't'){
+        texflag = 1;
+        texid = 5;
+    }
+    else if(key == 'y'){
+        texflag = 1;
+        texid = 6;
+    }
+    else if(key == 'u'){
+        texflag = 1;
+        texid = 7;
+    }
+    else if(key == 'i'){
+        texflag = 1;
+        texid = 8;
+    }
+    else if(key == 'o'){
+        texflag = 1;
+        texid = 9;
+    }
+    else if(key == 'p'){
+        texflag = 1;
+        texid = 10;
     }
 }
 

@@ -78,10 +78,14 @@ class ObjSimple{
 public:
     ObjSimple();
     void setup(int _w,int _h,int _x,int _y,int _z);
+    void settex(int _i,int _j);
     bool visible(float);
+    bool killmyself(float);
     int width;
     int height;
     int x,y,z;
     int visibleyrange;
     void draw(ofImage tex);
+    int texidi = 0;
+    int texidj = 0;
 };
