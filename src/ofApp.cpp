@@ -69,8 +69,18 @@ void ofApp::setup(){
     cameraId = 1;
     objFrame.setup(scalex, scaley, scalez, objFrameOffsetx, objFrameOffsety);
     
+
     texTorii.loadImage("鳥居.png");
     objTorii.setup(600, 600, 0, 700, 0);
+    
+    texCloud.loadImage("cloud1.png");
+    for (int i = 0;i<100;i++){
+        ObjSimple objbuf;
+        objbuf.setup(1000, 1000, 0, i*2000, 0);
+        objClouds.push_back(objbuf);
+    }
+    
+    
     
     // set the camera distance
     camDist  = 1605;
@@ -269,7 +279,7 @@ void ofApp::draw3d(){
     
     switch (cameraId) {
         case 1:
-            camera.setPosition(0, -1000, 400);
+            camera.setPosition(0, -1000, 200);
             camera.lookAt(ofVec3f(0,0,0),ofVec3f(0,0,1));
             break;
         case 2:
@@ -447,9 +457,14 @@ void ofApp::draw3d(){
     ofNoFill();*/
     //ba.drawNormals(1000);
     //texture3.getTextureReference().unbind();
-    camera.begin();
+    camera2.begin();
     objTorii.draw(texTorii);
-    camera.end();
+    for(int i =0 ;i< objClouds.size();i++){
+        if(objClouds[i].visible(cameraMoving.y)){
+            objClouds[i].draw(texCloud);
+        }
+    }
+    camera2.end();
     
     
     glDepthMask(GL_TRUE);
@@ -571,14 +586,16 @@ void ofApp::draw(){
     
     //シンクロ率表示
     ofSetColor(color3);
-    if(sizes.size() || sizes2.size()){
-        syncScore = ((int)(sizes.size()*100/(sizes.size()+sizes2.size())) + syncScore*3)/4;
-        if(syncScore > 98){
-            syncScore = 100;
+    if(cameraCount%2==0){
+        if(sizes.size() || sizes2.size()){
+            syncScore = ((int)(sizes.size()*100/(sizes.size()+sizes2.size())) + syncScore*3)/4;
+            if(syncScore > 98){
+                syncScore = 100;
+            }
         }
-        font.drawString(ofToString(syncScore),70,100);
-        font2.drawString("%",185,100);
     }
+    font.drawString(ofToString(syncScore),ofGetWidth()/2,ofGetHeight()/2);
+    font2.drawString("%",ofGetWidth()/2+115,ofGetHeight()/2);
     
     if(!bHideGui) gui.draw();
     
@@ -674,6 +691,8 @@ void ofApp::keyPressed(int key){
     }
     else if(key == 'l') {
         gui.loadFromFile("settings.xml");
+    }else if(key == '1'){
+        bFogSw = true;//白霧を切り替えるスイッチ
     }else if(key == '2'){
         bDraw2d = !bDraw2d;
     }else if(key == '3'){

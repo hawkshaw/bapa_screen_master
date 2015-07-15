@@ -78,8 +78,10 @@ class ObjSimple{
 public:
     ObjSimple();
     void setup(int _w,int _h,int _x,int _y,int _z);
+    bool visible(float);
     int width;
     int height;
     int x,y,z;
+    int visibleyrange;
     void draw(ofImage tex);
 };

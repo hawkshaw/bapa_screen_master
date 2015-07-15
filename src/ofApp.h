@@ -92,6 +92,8 @@ class ofApp : public ofBaseApp{
     
     //3D CG 関連
     bool bDraw3d;
+    
+    bool bFogSw;
     vector <ofVec3f> points;
     vector <ofVec3f> sizes;
     vector <ofVec3f> points2;//間違ってるやつ
@@ -123,6 +125,10 @@ class ofApp : public ofBaseApp{
     // 鳥居logo
     ofImage texTorii;
     ObjSimple objTorii;
+    
+    // 雲たち
+    ofImage texCloud;
+    vector<ObjSimple> objClouds;
     
     //虹色
     int rainbow[7][3] = {{0xFF,0x00,0x00},

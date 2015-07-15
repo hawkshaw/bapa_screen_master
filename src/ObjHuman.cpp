@@ -20,6 +20,18 @@ void ObjSimple::setup(int _w, int _h, int _x, int _y, int _z){
     x = _x;
     y = _y;
     z = _z;
+    visibleyrange = 4000;
+}
+
+
+bool ObjSimple::visible(float ypos){//ypos：カメラY座標
+    if(ypos < (y-visibleyrange)){
+        return false;
+    }else if((y+visibleyrange) < ypos){
+        return false;
+    }else{
+        return true;
+    }
 }
 
 void ObjSimple::draw(ofImage tex){
