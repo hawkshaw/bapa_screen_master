@@ -9,6 +9,8 @@
 
 #define HOST "localhost"
 
+#include "ofVbo.h"
+#define NUM_BILLBOARDS 500  //松
 
 class ofApp : public ofBaseApp{
     private:
@@ -31,12 +33,12 @@ class ofApp : public ofBaseApp{
 		void gotMessage(ofMessage msg);
     
     ofImage img;
-    ofVideoGrabber grabber;
     bool bHideImage;
     bool bBlack;
     bool bHideGui;
     bool bHideInfo;
     int judgeLine;
+    int judgeLine_yoko;
     int score;
     
     int syncScore = 0;
@@ -139,4 +141,12 @@ class ofApp : public ofBaseApp{
         {0x00,0x00,0xCC},
         {0x66,0x00,0xCC}};
     //
+    
+    
+    // billboard particles（松）
+    float billboardSizeTarget[NUM_BILLBOARDS];
+    ofShader billboardShader;
+    ofImage texture_;
+    ofVboMesh billboards;
+    ofVec3f billboardVels[NUM_BILLBOARDS];
 };
