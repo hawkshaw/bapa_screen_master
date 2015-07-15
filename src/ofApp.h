@@ -136,6 +136,10 @@ class ofApp : public ofBaseApp{
     ofImage texCloud;
     vector<ObjSimple> objClouds;
     
+    
+    vector<ofImage> texTexts;
+    vector<ObjSimple> objTexts;
+    
     ofImage texSetsumei1;
     ofImage texSetsumei2;
     ofImage texSetsumei3;
@@ -163,6 +167,14 @@ class ofApp : public ofBaseApp{
         {"21","22","23","24","matsu","1","2","3","4","5"},
         {"21","22","23","24","matsu","1","2","3","4","5"}};
 
+    char texlib2[3][20]={"right","center","left"};
+    char texlib3[2][20]={"front","back"};
+    char texlib4[2][20]={"good","ng"};
+    int commentxpos[3]={300,0,-300};
+    int commentypos[2]={200,-200};
+    bool commentdraw[3][2][2];//good or ngコメントを出すかどうか
+    bool commentsw=false;//good ngどちらのコメントを出すかのスイッチ
+
     /*"7",			"leftfrontng"
         10.png			8.png			matsu.png
         11.png			9.png			midori.png
@@ -189,6 +201,8 @@ class ofApp : public ofBaseApp{
     int texlibnum = 0;
     int texid;//
     int texflag;//ボタンが押されると立つ
+    
+    int commentId;
     
     // billboard particles（松）
     float billboardSizeTarget[NUM_BILLBOARDS];

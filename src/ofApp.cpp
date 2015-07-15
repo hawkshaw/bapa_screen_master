@@ -12,7 +12,7 @@ void ofApp::setup(){
     
     bHideImage = false;
     bBlack = false;
-    bHideGui = false;
+    bHideGui = true;
     bHideInfo = false;
     bMusicStop = false;
     bMusicPlay = false;
@@ -71,7 +71,7 @@ void ofApp::setup(){
     objFrame.setup(scalex, scaley, scalez, objFrameOffsetx, objFrameOffsety);
     
     texTorii.loadImage("textures/torii.png");
-    objTorii.setup(600, 600, 0, 800, 300);
+    objTorii.setup(1200, 1200, 0, 800, 300);
 
     
     texCloud.loadImage("textures/cloud1.png");
@@ -90,6 +90,30 @@ void ofApp::setup(){
             strcat(bufchar,".png");
             bufimage.loadImage(bufchar);
             texLibs.push_back(bufimage);
+        }
+    }
+    
+    for (int i = 0; i < 3 ;i++){
+        for(int j = 0;j < 2; j++){
+            for(int k =0; k < 2; k++){
+                ofImage bufimage;
+                char bufchar2[40] = "";
+                strcat(bufchar2,"textures/");
+                strcat(bufchar2,texlib2[i]);
+                strcat(bufchar2,texlib3[j]);
+                strcat(bufchar2,texlib4[k]);
+                strcat(bufchar2,".png");
+                bufimage.loadImage(bufchar2);
+                texTexts.push_back(bufimage);
+                ObjSimple objbuf2;
+                
+                int buf_x,buf_y,buf_z;
+                buf_x = ((commentxpos[i] - objFrameOffsetx)*scalex)>>5; //32等倍
+                buf_y = ((commentypos[j] - objFrameOffsety)*scaley)>>5; //32等倍
+                buf_z = (300 * scalez) >>5;//32等倍
+                objbuf2.setup(200, 200, buf_x, buf_y, buf_z);
+                objTexts.push_back(objbuf2);
+            }
         }
     }
 
@@ -312,7 +336,7 @@ void ofApp::draw3d(){
     
     switch (cameraId) {
         case 1:
-            camera.setPosition(0, -1000, 200);
+            camera.setPosition(0, -1000, 400);
             camera.lookAt(ofVec3f(0,0,0),ofVec3f(0,0,1));
             break;
         case 2:
@@ -423,6 +447,7 @@ void ofApp::draw3d(){
     
     glPointSize(20);
     
+    //観客ノード
     texture.bind();
     //texture2.bind();
     //ofSetColor(255);
@@ -443,6 +468,8 @@ void ofApp::draw3d(){
     //ライブハウスグリッド描画
     objFrame.draw();
 
+    
+    
     camera.end();
     shader.end();
     
@@ -450,15 +477,16 @@ void ofApp::draw3d(){
     //ofDisableBlendMode();
     ofDisableAlphaBlending();
     
+    //基準座標
     camera2.begin();
-    
     ofSetLineWidth(1);
-    ofSetColor(255,0,0);
+    
+    /*ofSetColor(255,0,0);
     ofLine(ofVec3f(0,0,0), ofVec3f(300,0,0));
     ofSetColor(0,255,0);
     ofLine(ofVec3f(0,0,0), ofVec3f(0,300,0));
     ofSetColor(0,0,255);
-    ofLine(ofVec3f(0,0,0), ofVec3f(0,0,300));
+    ofLine(ofVec3f(0,0,0), ofVec3f(0,0,300));*/
     
     //ここから松
     ofEnableAlphaBlending();
@@ -493,6 +521,8 @@ void ofApp::draw3d(){
         }
     }
 
+
+    
     for(int i =0 ;i< objLibs.size();i++){
         if(objLibs[i].visible(cameraMoving.y)){
             objLibs[i].draw(texLibs[objLibs[i].texidi*TEXLIBNUM+objLibs[i].texidj]);
@@ -503,9 +533,25 @@ void ofApp::draw3d(){
         }
     }
     
-    ofDisableAlphaBlending();
     camera2.end();
 
+    //ここから応援コメント
+    camera.begin();
+    ofSetColor(255,255,255);
+    
+    for (int i = 0; i < 3 ;i++){
+        for(int j = 0;j < 2; j++){
+            for(int k =0; k < 2; k++){
+                if(commentdraw[i][j][k]){
+                    objTexts[i*4+j*2+k].draw(texTexts[i*4+j*2+k]);
+                }
+            }
+        }
+    }
+    camera.end();
+    ofDisableAlphaBlending();
+
+    
     glDepthMask(GL_TRUE);
 }
 
@@ -836,6 +882,27 @@ void ofApp::keyPressed(int key){
     else if(key == 'p'){
         texflag = 1;
         texid = 10;
+    }
+    else if(key == ';'){
+        commentdraw[2][0][(int)commentsw]= !commentdraw[2][0][(int)commentsw];
+    }
+    else if(key == ':'){
+        commentdraw[1][0][(int)commentsw]= !commentdraw[1][0][(int)commentsw];
+    }
+    else if(key == ']'){
+        commentdraw[0][0][(int)commentsw]= !commentdraw[0][0][(int)commentsw];
+    }
+    else if(key == '.'){
+        commentdraw[2][1][(int)commentsw]= !commentdraw[2][1][(int)commentsw];
+    }
+    else if(key == '/'){
+        commentdraw[1][1][(int)commentsw]= !commentdraw[1][1][(int)commentsw];
+    }
+    else if(key == '_'){
+        commentdraw[0][1][(int)commentsw]= !commentdraw[0][1][(int)commentsw];
+    }
+    else if(key == '['){
+        commentsw= !commentsw;
     }
 }
 
