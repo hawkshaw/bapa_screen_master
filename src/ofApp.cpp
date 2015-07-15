@@ -6,8 +6,7 @@ void ofApp::setup(){
     //ofSetVerticalSync(true);
     //ofEnableSmoothing();
     ofSetFrameRate(30);
-    grabber.initGrabber(640, 360);
-    ofSetCircleResolution(64);
+    ofSetCircleResolution(128);
     
     img.loadImage("sora.jpg");
     
@@ -20,6 +19,7 @@ void ofApp::setup(){
     bMusicReset = false;
     
     judgeLine = 280;
+    judgeLine_yoko = 100;
     score = 0;
     
     objVelocity = 3.9355f;
@@ -31,7 +31,7 @@ void ofApp::setup(){
     gui.add(missThr.set("missThr", 30,1,200));//失敗と判定する閾値
     gui.add(scalex.set("3d scale x", 30,1,256));
     gui.add(scaley.set("3d scale y", 30,1,256));
-    gui.add(scalez.set("3d scale z", 30,1,256));
+    gui.add(scalez.set("3d scale z", 1,1,256));
     gui.add(humanscale.set("size scale", 2,1,10));
     gui.add(humansizeoffset.set("size offset", 5,1,256));
     gui.add(timelineMethod.set("Timeline Draw Method", 0,0,3));
@@ -69,30 +69,32 @@ void ofApp::setup(){
     cameraId = 1;
     objFrame.setup(scalex, scaley, scalez, objFrameOffsetx, objFrameOffsety);
     
-    texTorii.loadImage("鳥居.png");
-    objTorii.setup(600, 600, 0, 700, 0);
+    texTorii.loadImage("textures/torii.png");
+    objTorii.setup(600, 600, 0, 800, 300);
+
+    
     
     // set the camera distance
-    camDist  = 1605;
+    //camDist  = 1605;
     //camera.setDistance(camDist);
     
-    // randomly add a point on a sphere
-    int   num = 500;
-    float radius = 1000;
-    for(int i = 0; i<num; i++ ) {
-        
-        float theta1 = ofRandom(0, TWO_PI);
-        float theta2 = ofRandom(0, TWO_PI);
-        
-        ofVec3f p;
-        p.x = cos( theta1 ) * cos( theta2 );
-        p.y = sin( theta1 );
-        p.z = cos( theta1 ) * sin( theta2 );
-        p *= radius;
-        
-        addPoint(p.x, p.y, p.z,10);
-        
-    }
+//    // randomly add a point on a sphere
+//    int   num = 500;
+//    float radius = 1000;
+//    for(int i = 0; i<num; i++ ) {
+//        
+//        float theta1 = ofRandom(0, TWO_PI);
+//        float theta2 = ofRandom(0, TWO_PI);
+//        
+//        ofVec3f p;
+//        p.x = cos( theta1 ) * cos( theta2 );
+//        p.y = sin( theta1 );
+//        p.z = cos( theta1 ) * sin( theta2 );
+//        p *= radius;
+//        
+//        addPoint(p.x, p.y, p.z,10);
+//        
+//    }
     
     // upload the data to the vbo
     int total = (int)points.size();
@@ -100,7 +102,6 @@ void ofApp::setup(){
     vbo.setNormalData(&sizes[0], total, GL_STATIC_DRAW);
     
     // load the shader
-
 
     
     //道路
@@ -115,7 +116,37 @@ void ofApp::setup(){
     shader.load("shaders/shader");
 #endif
     
-}
+//-----------------------------------------------------------------
+//    松を500個ほど配置
+//    
+    billboards.getVertices().resize(NUM_BILLBOARDS);
+    billboards.getColors().resize(NUM_BILLBOARDS);
+    billboards.getNormals().resize(NUM_BILLBOARDS,ofVec3f(0));
+    
+    // ------------------------- billboard particles
+    for (int i=0; i<NUM_BILLBOARDS; i++) {
+        billboardVels[i].set(ofRandomf(), -1.0, ofRandomf());
+        billboards.getVertices()[i].set(ofRandom(-800, 800),
+                                        ofRandom(0, 100000),
+                                        ofRandom(-500, 500));
+        //billboards.getColors()[i].set(ofColor(255));
+        //billboards.getColors()[i].set(ofColor::fromHsb(160, 255, 255));
+        billboardSizeTarget[i] = ofRandom(64, 128);
+    }
+    billboards.setUsage( GL_DYNAMIC_DRAW );
+    billboards.setMode(OF_PRIMITIVE_POINTS);
+    billboardShader.load("shadersGL2/Billboard");
+    
+    // we need to disable ARB textures in order to use normalized texcoords
+    //ofDisableArbTex();
+    texture_.loadImage("textures/matsu.png");
+    ofEnableAlphaBlending();
+//
+//
+//---------------------------------------------------------------------
+    
+    
+}   //setupここまで
 
 void ofApp::valChanged(int &val){
     objFrame.setup(scalex, scaley, scalez, objFrameOffsetx, objFrameOffsety);
@@ -126,32 +157,31 @@ void ofApp::valChanged(int &val){
 //--------------------------------------------------------------
 void ofApp::update(){
     
-    grabber.update();
     
     while (receiver.hasWaitingMessages()) {
         //メッセージを取得
         ofxOscMessage m;
         receiver.getNextMessage(&m);
         
-        if(m.getAddress() == "/bang"){ //名前をチェック
+        if(m.getAddress() == "/bang/left"){ //名前をチェック
             Obj o;
-            o.setup3(ofVec2f(ofGetWidth(),120), objVelocity);
+            o.setup3(ofVec2f(ofGetWidth(),judgeLine_yoko), objVelocity);
             Objects3.push_back(o);
             //cout << "bang fired" << endl;
         }
         else if(m.getAddress() == "/bang/up"){ //名前をチェック
             Obj o;
-            o.setup1(ofVec2f(ofGetWidth(),120), objVelocity);
+            o.setup1(ofVec2f(ofGetWidth(),judgeLine_yoko), objVelocity);
             Objects1.push_back(o);
         }
         else if(m.getAddress() == "/bang/right"){ //名前をチェック
             Obj o;
-            o.setup2(ofVec2f(ofGetWidth(),120), objVelocity);
+            o.setup2(ofVec2f(ofGetWidth(),judgeLine_yoko), objVelocity);
             Objects2.push_back(o);
         }
         else if(m.getAddress() == "/bang/clap"){ //名前をチェック
             Obj o;
-            o.setup4(ofVec2f(ofGetWidth(),120), objVelocity);
+            o.setup4(ofVec2f(ofGetWidth(),judgeLine_yoko), objVelocity);
             Objects4.push_back(o);
         }
         else if(m.getAddress() == "/mouse/position2"){ //名前をチェック
@@ -230,6 +260,14 @@ void ofApp::update(){
         ObjHumans[i].update();
     }
     objRoad.update();
+    
+    
+    
+    //松
+    for (int i=0; i<NUM_BILLBOARDS; i++) {
+        billboards.setNormal(i,ofVec3f(12 + billboardSizeTarget[i],0,0));
+    }
+
 }
 
 //--------------------------------------------------------------
@@ -269,7 +307,7 @@ void ofApp::draw3d(){
     
     switch (cameraId) {
         case 1:
-            camera.setPosition(0, -1000, 400);
+            camera.setPosition(0, -1200, 500);
             camera.lookAt(ofVec3f(0,0,0),ofVec3f(0,0,1));
             break;
         case 2:
@@ -337,7 +375,8 @@ void ofApp::draw3d(){
     
     ofDisablePointSprites();
     ofDisableBlendMode();
-
+    
+    glDepthMask(GL_TRUE);
     
     //観客描画
     //ofEnableBlendMode(OF_BLENDMODE_ADD);//加算描画 this makes everything look glowy
@@ -392,43 +431,43 @@ void ofApp::draw3d(){
     
     // this makes everything look glowy :)
     ofEnablePointSprites();
+    //ofEnableBlendMode(OF_BLENDMODE_ADD);
     ofEnableAlphaBlending();
     
     shader.begin();
     camera.begin();
-    //texture.bind();
-    texture2.bind();
-    ofSetColor(255);
-    //ofSetColor(0, 100, 255);
+    
+    glPointSize(20);
+    
+    texture.bind();
+    //texture2.bind();
+    //ofSetColor(255);
+    ofSetColor(0, 100, 255);
     int total = (int)points.size();
     vbo.setVertexData(&points[0], total, GL_STATIC_DRAW);
     vbo.setNormalData(&sizes[0], total, GL_STATIC_DRAW);
     vbo.draw(GL_POINTS, 0, (int)points.size());
     
-    //ofSetColor(255, 100, 90);
+    ofSetColor(255, 100, 90);
     total = (int)points2.size();
     vbo.setVertexData(&points2[0], total, GL_STATIC_DRAW);
     vbo.setNormalData(&sizes2[0], total, GL_STATIC_DRAW);
     vbo.draw(GL_POINTS, 0,(int)points2.size());
-    //texture.unbind();
-    texture2.unbind();
+    texture.unbind();
+    //texture2.unbind();
 
-    //ofDisableBlendMode();
-    
     //ライブハウスグリッド描画
     objFrame.draw();
 
     camera.end();
     shader.end();
     
-    
-    
-
     ofDisablePointSprites();
     //ofDisableBlendMode();
-    ofEnableAlphaBlending();
+    ofDisableAlphaBlending();
     
     camera2.begin();
+    
     ofSetLineWidth(1);
     ofSetColor(255,0,0);
     ofLine(ofVec3f(0,0,0), ofVec3f(300,0,0));
@@ -436,6 +475,22 @@ void ofApp::draw3d(){
     ofLine(ofVec3f(0,0,0), ofVec3f(0,300,0));
     ofSetColor(0,0,255);
     ofLine(ofVec3f(0,0,0), ofVec3f(0,0,300));
+    
+    //ここから松
+    ofEnableAlphaBlending();
+    // bind the shader so that wee can change the
+    // size of the points via the vert shader
+    billboardShader.begin();
+    ofEnablePointSprites(); // not needed for GL3/4
+    texture_.getTextureReference().bind();
+    billboards.draw();
+    texture_.getTextureReference().unbind();
+    ofDisablePointSprites(); // not needed for GL3/4
+    billboardShader.end();
+    ofDisableAlphaBlending();
+    //ここまで松
+    
+    
     camera2.end();
     
     
@@ -447,10 +502,11 @@ void ofApp::draw3d(){
     ofNoFill();*/
     //ba.drawNormals(1000);
     //texture3.getTextureReference().unbind();
+    ofEnableAlphaBlending();
     camera.begin();
     objTorii.draw(texTorii);
     camera.end();
-    
+    ofDisableAlphaBlending();
     
     glDepthMask(GL_TRUE);
 }
@@ -464,36 +520,43 @@ void ofApp::draw(){
     //ofBackgroundGradient(ofColor(255), ofColor(127, 127, 255));
     
     ofSetColor(255);
-    
     if(bBlack){
-        if(!bHideImage) img.draw(0,0,ofGetWidth(),ofGetHeight());
-        else grabber.draw(0, 0, ofGetWidth(), ofGetHeight());
+        img.draw(0,0,ofGetWidth(),ofGetHeight());
+        //movie.draw(0, 0);
+        return;
     }
     
-//    ofSetColor(100, 200);
-//    ofRect(0, 0, ofGetWidth(), 250);
-
+//    ofSetColor(200,200,170);
+//    ofRect(0, 0, ofGetWidth(), ofGetHeight());
+    
+    
+//    if(bHideGui)    movie.draw(0, 0);
+    
     //ここから3D CG
     draw3d();
     //ここまで3D CG
+    
+    ofEnableAlphaBlending();
+    ofSetColor(200,100);
+    ofRect(0, 0, ofGetWidth(), judgeLine_yoko*2);
 
     ofSetColor(color3);
     
     if(timelineMethod<=1){
     ofSetLineWidth(2);
     //ofLine(0, 40, ofGetWidth(), 40);
-    ofLine(0, 120, ofGetWidth(), 120);
+    ofLine(0, judgeLine_yoko, ofGetWidth(), judgeLine_yoko);
     //ofLine(0, 200, ofGetWidth(), 200);
     //ofLine(0, 250, ofGetWidth(), 250);
-    ofLine(judgeLine, 0, judgeLine, 240);
+    ofLine(judgeLine, 0, judgeLine, judgeLine_yoko*2);
     ofNoFill();
-    ofCircle(judgeLine, 120, 35);
+    ofCircle(judgeLine, judgeLine_yoko, 40);
     ofFill();
     for(int i=0;i<16;i++){
 //        ofCircle(i*80+40, 40, 6.5);
 //        ofCircle(i*80+40, 120, 6.5);
 //        ofCircle(i*80+40, 200, 6.5);
-        ofLine(i*80+40, 115, i*80+40, 125);
+        ofLine(i*80+40, judgeLine_yoko-5, i*80+40, judgeLine_yoko+5);
     }
 //    for(int i=0;i<3;i++){
 //        ofSetColor(150);
@@ -522,8 +585,8 @@ void ofApp::draw(){
         ofCircle(buf_o.positionEnd, 35);
         ofFill();
     }
-
     
+    ofEnableAlphaBlending();
     ofSetColor(255);
     for (int i = 0; i < Objects1.size(); i++) {
         Objects1[i].draw1();
@@ -551,6 +614,8 @@ void ofApp::draw(){
     for (int i = 0; i < bigObjects.size(); i++) {
         bigObjects[i].drawBig();
     }
+    
+    ofDisableAlphaBlending();
 
     //ofSetColor(255);
     //ofRect(0, 0, judgeLine-80, 250);
@@ -580,12 +645,12 @@ void ofApp::draw(){
         font2.drawString("%",185,100);
     }
     
-    if(!bHideGui) gui.draw();
+    if(bHideGui) gui.draw();
     
     string info = "FPS: "+ofToString(ofGetFrameRate(), 3);
     //info += "\nObjects num: "+ofToString(Objects.size());
     //info += "\nlongObjects num: "+ofToString(longObjects.size());
-    info += "\npress z: normal x: long c: big";
+    info += "\npress z: clap x: right c: left";
     info += "\npress p: music play s: stop r: reset";
     if(bMusicPlay) info += "\nmusic: play";
     else if(bMusicStop) info += "\nmusic: stop";
@@ -594,8 +659,13 @@ void ofApp::draw(){
     info += "\nelapsed time: "+ofToString(ofGetElapsedTimeMillis());
 //    info += "\ntimer: "+ofToString(timer)+" ms";
     info += "\nobjVel: "+ofToString(objVelocity);
+    info += "\nParticle Matsu: "+ofToString(NUM_BILLBOARDS);
     ofSetColor(0);
     if(!bHideInfo) ofDrawBitmapString(info, 20, ofGetHeight()-100);
+    
+//    ofFill();
+//    ofRect(0, 0, 240, 1080);
+//    ofRect(1680, 0, 240, 1080);
 
 }
 
@@ -608,19 +678,20 @@ void ofApp::keyPressed(int key){
     else if(key == 'z'){
         Obj o;
         o.setDrawMethod(timelineMethod);
-        o.setup4(ofVec2f(ofGetWidth(),40), objVelocity);
+        o.setup4(ofVec2f(ofGetWidth(),judgeLine_yoko), objVelocity);
         Objects4.push_back(o);
     }
     else if(key == 'x'){
         Obj o;
-        o.setupLong(ofVec2f(ofGetWidth(),120), objVelocity, length_1);
-        longObjects.push_back(o);
+        o.setDrawMethod(timelineMethod);
+        o.setup2(ofVec2f(ofGetWidth(),judgeLine_yoko), objVelocity);
+        Objects2.push_back(o);
     }
     else if(key == 'c'){
         Obj o;
         o.setDrawMethod(timelineMethod);
-        o.setup1(ofVec2f(ofGetWidth(),200), objVelocity);
-        Objects1.push_back(o);
+        o.setup3(ofVec2f(ofGetWidth(),judgeLine_yoko), objVelocity);
+        Objects3.push_back(o);
     }
 
     else if(key == 'p'){
@@ -695,6 +766,25 @@ void ofApp::keyPressed(int key){
     }else if(key == '9') {
         cameraCount = 0;
         cameraId = 5;
+    }else if(key == ' '){       //松
+        billboards.getVertices().resize(NUM_BILLBOARDS);
+        billboards.getColors().resize(NUM_BILLBOARDS);
+        billboards.getNormals().resize(NUM_BILLBOARDS,ofVec3f(0));
+        
+        // ------------------------- billboard particles
+        for (int i=0; i<NUM_BILLBOARDS; i++) {
+            
+            billboardVels[i].set(ofRandomf(), -1.0, ofRandomf());
+            billboards.getVertices()[i].set(camera2.getPosition()+
+                                            ofVec3f(ofRandom(-800, 800),
+                                            ofRandom(0, 100000),
+                                            ofRandom(-1000, 0)));
+            
+            //billboards.getColors()[i].set(ofColor(255));
+            //billboards.getColors()[i].set(ofColor::fromHsb(160, 255, 255));
+            billboardSizeTarget[i] = ofRandom(64, 128);
+        
+        }
     }
 }
 
